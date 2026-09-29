@@ -11,6 +11,7 @@ export default function PaginaIdeiasFuturas() {
     <ListaProjetos
       titulo="Ideias Futuras"
       descricao="Ideias guardadas para quando houver tempo e motivation."
+      botao="Nova Ideia"
       projetos={porStatus("ideia")}
     />
   );

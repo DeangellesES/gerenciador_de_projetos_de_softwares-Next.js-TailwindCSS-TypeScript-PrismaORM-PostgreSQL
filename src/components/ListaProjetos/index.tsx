@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
-import CartaoProjeto from "@/components/CartaoProjeto";
+import BuscaProjetos from "@/components/BuscaProjetos";
 import type { Projeto } from "@/lib/projetos";
-import { Plus, Search  } from 'lucide-react';
+import { Plus } from 'lucide-react';
 
 type ListaProjetosProps = {
   titulo: string;
@@ -35,30 +35,7 @@ export default function ListaProjetos({
         <p className="text-white text-sm">Concluídos 3</p>
       </div>
 
-      <div className="relative w-[30%]">
-        <Search
-          className="absolute left-3 top-1/2 -translate-y-1/2 text-white/70"
-          size={18}
-        />
-
-        <input
-          type="text"
-          className="w-full bg-[#080F21] pl-10 placeholder:text-white/70 p-2 rounded"
-          placeholder="Buscar Projetos"
-        />
-      </div>
-
-      {projetos.length === 0 ? (
-        <p className="text-[#64748B] text-sm border border-dashed border-white/10 rounded-xl p-8 text-center">
-          Nenhum projeto por aqui ainda.
-        </p>
-      ) : (
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-          {projetos.map((projeto) => (
-            <CartaoProjeto key={projeto.id} projeto={projeto} />
-          ))}
-        </div>
-      )}
+      <BuscaProjetos projetos={projetos} />
     </div>
   );
 }

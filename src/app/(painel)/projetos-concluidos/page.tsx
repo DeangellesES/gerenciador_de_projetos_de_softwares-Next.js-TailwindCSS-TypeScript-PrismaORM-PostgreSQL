@@ -11,6 +11,7 @@ export default function PaginaProjetosConcluidos() {
     <ListaProjetos
       titulo="Projetos Concluídos"
       descricao="Trabalhos finalizados e disponíveis no portfólio."
+      botao="Novo Projeto"
       projetos={porStatus("concluido")}
     />
   );

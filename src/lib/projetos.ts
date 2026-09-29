@@ -100,6 +100,32 @@ export function porStatus(status: StatusProjeto): Projeto[] {
   return projetos.filter((projeto) => projeto.status === status);
 }
 
+export function normalizar(texto: string): string {
+  return texto
+    .normalize("NFD")
+    .replace(/\p{Diacritic}/gu, "")
+    .toLowerCase()
+    .trim();
+}
+
+export function buscarProjetos(lista: Projeto[], termo: string): Projeto[] {
+  const busca = normalizar(termo);
+
+  if (!busca) {
+    return lista;
+  }
+
+  const termos = busca.split(/\s+/).filter(Boolean);
+
+  return lista.filter((projeto) => {
+    const alvo = normalizar(
+      [projeto.nome, projeto.descricao, ...projeto.stack].join(" "),
+    );
+
+    return termos.every((termoBusca) => alvo.includes(termoBusca));
+  });
+}
+
 export function formatarData(data: string): string {
   return new Date(`${data}T12:00:00`).toLocaleDateString("pt-BR", {
     day: "2-digit",
