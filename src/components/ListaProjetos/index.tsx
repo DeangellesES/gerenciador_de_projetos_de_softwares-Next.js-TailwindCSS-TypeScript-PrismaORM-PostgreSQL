@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import BuscaProjetos from "@/components/BuscaProjetos";
+import FiltroProjetos from "@/components/FiltroProjetos";
 import type { Projeto } from "@/lib/projetos";
 import { Plus } from 'lucide-react';
 
@@ -29,13 +29,7 @@ export default function ListaProjetos({
       </header>
       {children}
 
-      <div className="flex gap-4 bg-[#080F21] w-fit p-3 rounded">
-        <p className="text-white text-sm">Todos 5</p>
-        <p className="text-white text-sm">Em Andamento 2</p>
-        <p className="text-white text-sm">Concluídos 3</p>
-      </div>
-
-      <BuscaProjetos projetos={projetos} />
+      <FiltroProjetos projetos={projetos} />
     </div>
   );
 }
