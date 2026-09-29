@@ -11,6 +11,7 @@ export default function PaginaProjetos() {
     <ListaProjetos
       titulo="Meus Projetos"
       descricao="Projetos em desenvolvimento, com progresso e prazo atualizados."
+      botao="Novo Projeto"
       projetos={porStatus("ativo")}
     />
   );
