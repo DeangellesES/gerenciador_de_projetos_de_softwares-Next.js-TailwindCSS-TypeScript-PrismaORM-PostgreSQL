@@ -2,13 +2,9 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, CalendarDays } from "lucide-react";
-import { formatarData, projetos, type StatusProjeto } from "@/lib/projetos";
-
-const rotulos: Record<StatusProjeto, string> = {
-  ativo: "Em andamento",
-  concluido: "Concluído",
-  ideia: "Ideia",
-};
+import AcoesProjeto from "@/components/AcoesProjeto";
+import { buscarProjetoPorId } from "@/lib/repositorio-projetos";
+import { ROTULOS_STATUS, formatarData } from "@/lib/projetos";
 
 export async function generateMetadata({
   params,
@@ -16,7 +12,7 @@ export async function generateMetadata({
   params: Promise<{ id: string }>;
 }): Promise<Metadata> {
   const { id } = await params;
-  const projeto = projetos.find((item) => item.id === id);
+  const projeto = await buscarProjetoPorId(id);
 
   return { title: projeto ? projeto.nome : "Projeto não encontrado" };
 }
@@ -27,7 +23,7 @@ export default async function PaginaProjeto({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const projeto = projetos.find((item) => item.id === id);
+  const projeto = await buscarProjetoPorId(id);
 
   if (!projeto) {
     notFound();
@@ -35,18 +31,22 @@ export default async function PaginaProjeto({
 
   return (
     <div className="px-10 py-8 flex flex-col gap-6 max-w-3xl">
-      <Link
-        href="/projetos"
-        className="text-sm text-[#94A3B8] hover:text-white flex items-center gap-2 transition-colors"
-      >
-        <ArrowLeft size={16} />
-        Voltar para Meus Projetos
-      </Link>
+      <div className="flex items-center justify-between">
+        <Link
+          href="/projetos"
+          className="text-sm text-[#94A3B8] hover:text-white flex items-center gap-2 transition-colors"
+        >
+          <ArrowLeft size={16} />
+          Voltar para Meus Projetos
+        </Link>
+
+        <AcoesProjeto projeto={projeto} />
+      </div>
 
       <header className="flex flex-col gap-2">
         <h1 className="text-white text-2xl font-bold">{projeto.nome}</h1>
         <span className="text-xs text-[#D1D5DB] bg-white/5 border border-white/10 rounded-full px-3 py-1 self-start">
-          {rotulos[projeto.status]}
+          {ROTULOS_STATUS[projeto.status]}
         </span>
         <p className="text-[#94A3B8] text-sm mt-1">{projeto.descricao}</p>
       </header>

@@ -1,18 +1,21 @@
 import type { Metadata } from "next";
 import ListaProjetos from "@/components/ListaProjetos";
-import { porStatus } from "@/lib/projetos";
+import { listarProjetos } from "@/lib/repositorio-projetos";
 
 export const metadata: Metadata = {
   title: "Projetos Concluídos",
 };
 
-export default function PaginaProjetosConcluidos() {
+export default async function PaginaProjetosConcluidos() {
+  const projetos = await listarProjetos({ status: "concluido" });
+
   return (
     <ListaProjetos
       titulo="Projetos Concluídos"
       descricao="Trabalhos finalizados e disponíveis no portfólio."
       botao="Novo Projeto"
-      projetos={porStatus("concluido")}
+      statusPadrao="concluido"
+      projetos={projetos}
     />
   );
 }

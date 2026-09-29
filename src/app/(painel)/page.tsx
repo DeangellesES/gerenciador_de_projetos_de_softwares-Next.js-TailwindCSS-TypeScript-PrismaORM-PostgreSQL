@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { CircleCheck, FolderOpenDot, Lightbulb } from "lucide-react";
-import { porStatus, type StatusProjeto } from "@/lib/projetos";
+import { contarProjetos } from "@/lib/repositorio-projetos";
+import type { StatusProjeto } from "@/lib/projetos";
 
 const secoes: {
   href: string;
@@ -32,10 +33,13 @@ const secoes: {
   },
 ];
 
-export default function VisaoGeral() {
+export default async function VisaoGeral() {
+  const contagem = await contarProjetos();
+  const total = contagem.ativo + contagem.concluido + contagem.ideia;
+
   const resumo = secoes.map((secao) => ({
     ...secao,
-    total: porStatus(secao.status).length,
+    total: contagem[secao.status],
   }));
 
   return (
@@ -43,7 +47,7 @@ export default function VisaoGeral() {
       <header className="flex flex-col gap-1">
         <h1 className="text-white text-2xl font-bold">Visão Geral</h1>
         <p className="text-[#94A3B8] text-sm">
-          Resumo dos {porStatus("ativo").length + porStatus("concluido").length + porStatus("ideia").length} projetos registrados.
+          Resumo dos {total} projetos registrados.
         </p>
       </header>
 

@@ -1,17 +1,16 @@
 import Link from "next/link";
 import { CalendarDays } from "lucide-react";
-import { formatarData, type Projeto, type StatusProjeto } from "@/lib/projetos";
+import {
+  ROTULOS_STATUS,
+  formatarData,
+  type Projeto,
+  type StatusProjeto,
+} from "@/lib/projetos";
 
 const cores: Record<StatusProjeto, { barra: string; badge: string }> = {
   ativo: { barra: "bg-sky-400", badge: "bg-sky-400/15 text-sky-300" },
   concluido: { barra: "bg-emerald-400", badge: "bg-emerald-400/15 text-emerald-300" },
   ideia: { barra: "bg-amber-400", badge: "bg-amber-400/15 text-amber-300" },
-};
-
-const rotulos: Record<StatusProjeto, string> = {
-  ativo: "Em andamento",
-  concluido: "Concluído",
-  ideia: "Ideia",
 };
 
 type CartaoProjetoProps = {
@@ -31,7 +30,7 @@ export default function CartaoProjeto({ projeto }: CartaoProjetoProps) {
         <span
           className={`text-xs font-medium px-2.5 py-1 rounded-full shrink-0 ${badge}`}
         >
-          {rotulos[projeto.status]}
+          {ROTULOS_STATUS[projeto.status]}
         </span>
       </div>
 

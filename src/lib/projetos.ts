@@ -1,4 +1,12 @@
-export type StatusProjeto = "ativo" | "concluido" | "ideia";
+export const STATUS_PROJETO = ["ativo", "concluido", "ideia"] as const;
+
+export type StatusProjeto = (typeof STATUS_PROJETO)[number];
+
+export const ROTULOS_STATUS: Record<StatusProjeto, string> = {
+  ativo: "Em andamento",
+  concluido: "Concluído",
+  ideia: "Ideia",
+};
 
 export type Projeto = {
   id: string;
@@ -6,98 +14,23 @@ export type Projeto = {
   descricao: string;
   status: StatusProjeto;
   stack: string[];
-  progresso?: number;
-  prazo?: string;
+  progresso: number | null;
+  prazo: Date | null;
+  criadoEm: Date;
+  atualizadoEm: Date;
 };
 
-export const projetos: Projeto[] = [
-  {
-    id: "gerenciador",
-    nome: "Gerenciador de Projetos",
-    descricao:
-      "Painel web para organizar projetos de desenvolvimento, com acompanhamento de status e prazo.",
-    status: "ativo",
-    stack: ["Next.js", "TypeScript", "Tailwind CSS"],
-    progresso: 65,
-    prazo: "2026-10-15",
-  },
-  {
-    id: "api-tarefas",
-    nome: "API de Tarefas",
-    descricao:
-      "Serviço REST para CRUD de tarefas com autenticação por token e paginação.",
-    status: "ativo",
-    stack: ["Node.js", "PostgreSQL", "Docker"],
-    progresso: 30,
-    prazo: "2026-12-01",
-  },
-  {
-    id: "dashboard-metricas",
-    nome: "Dashboard de Métricas",
-    descricao:
-      "Visualização de indicadores de produtividade com gráficos e filtros por período.",
-    status: "ativo",
-    stack: ["React", "Chart.js"],
-    progresso: 12,
-  },
-  {
-    id: "portfolio",
-    nome: "Portfólio Pessoal",
-    descricao:
-      "Site estático de apresentação com estudos de caso dos projetos concluídos.",
-    status: "concluido",
-    stack: ["Next.js", "Tailwind CSS"],
-    progresso: 100,
-    prazo: "2026-03-20",
-  },
-  {
-    id: "landing-page",
-    nome: "Landing Page de Produto",
-    descricao:
-      "Página de conversão com formulário de contato e teste A/B do CTA principal.",
-    status: "concluido",
-    stack: ["Astro", "Vite"],
-    progresso: 100,
-    prazo: "2026-01-08",
-  },
-  {
-    id: "bot-telegram",
-    nome: "Bot de Telegram",
-    descricao:
-      "Bot para avisos automáticos de deploy e resumo diário de commits.",
-    status: "concluido",
-    stack: ["Python", "Telegram API"],
-    progresso: 100,
-    prazo: "2025-11-30",
-  },
-  {
-    id: "editor-markdown",
-    nome: "Editor de Markdown com Preview",
-    descricao:
-      "Editor com divisão de tela, auto-save em localStorage e exportação para PDF.",
-    status: "ideia",
-    stack: ["React", "MDX"],
-  },
-  {
-    id: "clone-spotify",
-    nome: "Clone de Streaming de Música",
-    descricao:
-      "Reprodução de faixas, playlists e modo offline usando a Web Audio API.",
-    status: "ideia",
-    stack: ["TypeScript", "Web Audio API"],
-  },
-  {
-    id: "extension-bloco",
-    nome: "Extensão de Bloqueio de Distração",
-    descricao:
-      "Extensão de navegador que bloqueia sites por horário e registra o tempo de foco.",
-    status: "ideia",
-    stack: ["Chrome Extensions", "Vite"],
-  },
-];
+export type DadosProjeto = {
+  nome: string;
+  descricao: string;
+  status: StatusProjeto;
+  stack: string[];
+  progresso: number | null;
+  prazo: Date | null;
+};
 
-export function porStatus(status: StatusProjeto): Projeto[] {
-  return projetos.filter((projeto) => projeto.status === status);
+export function ehStatusProjeto(valor: unknown): valor is StatusProjeto {
+  return typeof valor === "string" && STATUS_PROJETO.includes(valor as StatusProjeto);
 }
 
 export function normalizar(texto: string): string {
@@ -126,10 +59,39 @@ export function buscarProjetos(lista: Projeto[], termo: string): Projeto[] {
   });
 }
 
-export function formatarData(data: string): string {
-  return new Date(`${data}T12:00:00`).toLocaleDateString("pt-BR", {
+export function formatarData(data: Date | string): string {
+  const valor = paraData(typeof data === "string" ? data : data.toISOString());
+
+  if (!valor) {
+    return "—";
+  }
+
+  return valor.toLocaleDateString("pt-BR", {
     day: "2-digit",
     month: "short",
     year: "numeric",
+    timeZone: "UTC",
   });
+}
+
+export function paraData(iso: string | null | undefined): Date | null {
+  if (!iso) {
+    return null;
+  }
+
+  const data = new Date(iso);
+
+  return Number.isNaN(data.getTime()) ? null : data;
+}
+
+export function paraTextoData(data: Date | null): string {
+  return data ? data.toISOString().slice(0, 10) : "";
+}
+
+export function gerarSlug(texto: string): string {
+  const slug = normalizar(texto)
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+
+  return slug || "projeto";
 }

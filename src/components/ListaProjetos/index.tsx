@@ -1,13 +1,14 @@
 import type { ReactNode } from "react";
+import BotaoNovoProjeto from "@/components/BotaoNovoProjeto";
 import FiltroProjetos from "@/components/FiltroProjetos";
-import type { Projeto } from "@/lib/projetos";
-import { Plus } from 'lucide-react';
+import type { Projeto, StatusProjeto } from "@/lib/projetos";
 
 type ListaProjetosProps = {
   titulo: string;
   botao: string;
   descricao: string;
   projetos: Projeto[];
+  statusPadrao?: StatusProjeto;
   children?: ReactNode;
 };
 
@@ -16,6 +17,7 @@ export default function ListaProjetos({
   botao,
   descricao,
   projetos,
+  statusPadrao,
   children,
 }: ListaProjetosProps) {
   return (
@@ -23,7 +25,7 @@ export default function ListaProjetos({
       <header className="flex flex-col gap-1">
         <div className="flex justify-between">
           <h1 className="text-white text-2xl font-bold">{titulo}</h1>
-          <button className="text-white bg-blue-400 py-2 px-4 rounded-md flex gap-1 items-center"><Plus />{botao}</button>
+          <BotaoNovoProjeto rotulo={botao} statusPadrao={statusPadrao} />
         </div>
         <p className="text-[#94A3B8] text-sm">{descricao}</p>
       </header>
