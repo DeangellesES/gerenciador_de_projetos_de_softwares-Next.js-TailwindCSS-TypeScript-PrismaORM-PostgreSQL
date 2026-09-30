@@ -19,9 +19,13 @@ function contarPorStatus(projetos: Projeto[], status: StatusProjeto) {
 
 type FiltroProjetosProps = {
   projetos: Projeto[];
+  mostrarCategorias?: boolean;
 };
 
-export default function FiltroProjetos({ projetos }: FiltroProjetosProps) {
+export default function FiltroProjetos({
+  projetos,
+  mostrarCategorias = true,
+}: FiltroProjetosProps) {
   const [categoria, setCategoria] = useState<Categoria>("todos");
 
   const visiveis =
@@ -31,37 +35,43 @@ export default function FiltroProjetos({ projetos }: FiltroProjetosProps) {
 
   return (
     <>
-      <div
-        role="tablist"
-        aria-label="Filtrar projetos por categoria"
-        className="flex gap-2 bg-[#080F21] w-fit p-2 rounded-lg"
-      >
-        {categorias.map(({ valor, rotulo }) => {
-          const selecionado = valor === categoria;
-          const total =
-            valor === "todos" ? projetos.length : contarPorStatus(projetos, valor);
+      {mostrarCategorias && (
+        <div
+          role="tablist"
+          aria-label="Filtrar projetos por categoria"
+          className="flex gap-2 bg-[#080F21] w-fit p-2 rounded-lg"
+        >
+          {categorias.map(({ valor, rotulo }) => {
+            const selecionado = valor === categoria;
+            const total =
+              valor === "todos"
+                ? projetos.length
+                : contarPorStatus(projetos, valor);
 
-          return (
-            <button
-              key={valor}
-              type="button"
-              role="tab"
-              aria-selected={selecionado}
-              onClick={() => setCategoria(valor)}
-              className={`text-sm px-3 py-1.5 rounded-md transition-colors cursor-pointer ${
-                selecionado
-                  ? "bg-[#131B2E] text-white font-medium"
-                  : "text-[#94A3B8] hover:text-white hover:bg-white/5"
-              }`}
-            >
-              {rotulo}{" "}
-              <span className={selecionado ? "text-white/80" : "text-[#64748B]"}>
-                {total}
-              </span>
-            </button>
-          );
-        })}
-      </div> 
+            return (
+              <button
+                key={valor}
+                type="button"
+                role="tab"
+                aria-selected={selecionado}
+                onClick={() => setCategoria(valor)}
+                className={`text-sm px-3 py-1.5 rounded-md transition-colors cursor-pointer ${
+                  selecionado
+                    ? "bg-[#131B2E] text-white font-medium"
+                    : "text-[#94A3B8] hover:text-white hover:bg-white/5"
+                }`}
+              >
+                {rotulo}{" "}
+                <span
+                  className={selecionado ? "text-white/80" : "text-[#64748B]"}
+                >
+                  {total}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      )}
 
       <BuscaProjetos projetos={visiveis} />
     </>

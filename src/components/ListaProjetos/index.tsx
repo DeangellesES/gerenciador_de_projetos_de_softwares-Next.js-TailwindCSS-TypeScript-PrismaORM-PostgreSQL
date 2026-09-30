@@ -10,6 +10,7 @@ type ListaProjetosProps = {
   projetos: Projeto[];
   statusPadrao?: StatusProjeto;
   mostrarStatus?: boolean;
+  mostrarCategorias?: boolean;
   children?: ReactNode;
 };
 
@@ -20,6 +21,7 @@ export default function ListaProjetos({
   projetos,
   statusPadrao,
   mostrarStatus,
+  mostrarCategorias,
   children,
 }: ListaProjetosProps) {
   return (
@@ -37,7 +39,10 @@ export default function ListaProjetos({
       </header>
       {children}
 
-      <FiltroProjetos projetos={projetos} />
+      <FiltroProjetos
+        projetos={projetos}
+        mostrarCategorias={mostrarCategorias}
+      />
     </div>
   );
 }

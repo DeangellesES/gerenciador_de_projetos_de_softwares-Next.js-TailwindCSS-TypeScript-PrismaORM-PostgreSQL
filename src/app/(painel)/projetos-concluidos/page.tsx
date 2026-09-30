@@ -16,6 +16,7 @@ export default async function PaginaProjetosConcluidos() {
       botao="Novo Projeto"
       statusPadrao="concluido"
       mostrarStatus={false}
+      mostrarCategorias={false}
       projetos={projetos}
     />
   );
