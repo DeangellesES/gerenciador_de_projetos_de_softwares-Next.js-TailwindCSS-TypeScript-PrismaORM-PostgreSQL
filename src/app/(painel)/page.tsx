@@ -19,7 +19,7 @@ const secoes: {
   },
   {
     href: "/projetos-concluidos",
-    titulo: "Projetos Concluídos",
+    titulo: "Projetos Finalizados",
     descricao: "Trabalhos finalizados e disponíveis no portfólio.",
     status: "concluido",
     Icone: CircleCheck,

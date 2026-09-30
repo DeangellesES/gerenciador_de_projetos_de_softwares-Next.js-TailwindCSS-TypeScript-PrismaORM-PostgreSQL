@@ -15,6 +15,7 @@ export default async function PaginaIdeiasFuturas() {
       descricao="Ideias guardadas para quando houver tempo e motivation."
       botao="Nova Ideia"
       statusPadrao="ideia"
+      mostrarStatus={false}
       projetos={projetos}
     />
   );

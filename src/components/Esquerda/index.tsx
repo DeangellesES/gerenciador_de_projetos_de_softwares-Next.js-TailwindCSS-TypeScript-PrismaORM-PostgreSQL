@@ -15,7 +15,7 @@ const links = [
   { href: "/projetos", rotulo: "Meus Projetos", Icone: FolderOpenDot },
   {
     href: "/projetos-concluidos",
-    rotulo: "Projetos Concluídos",
+    rotulo: "Projetos Finalizados",
     Icone: CircleCheck,
   },
   { href: "/ideias-futuras", rotulo: "Ideias Futuras", Icone: Lightbulb },

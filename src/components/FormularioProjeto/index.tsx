@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { X } from "lucide-react";
 import {
   ROTULOS_STATUS,
+  ROTULOS_STATUS_NOVO_PROJETO,
   STATUS_PROJETO,
   paraTextoData,
   type Projeto,
@@ -15,6 +16,7 @@ type FormularioProjetoProps = {
   children: ReactNode;
   projeto?: Projeto;
   statusPadrao?: StatusProjeto;
+  mostrarStatus?: boolean;
 };
 
 const CAMPOS =
@@ -24,6 +26,7 @@ export default function FormularioProjeto({
   children,
   projeto,
   statusPadrao = "ativo",
+  mostrarStatus = true,
 }: FormularioProjetoProps) {
   const router = useRouter();
   const dialogo = useRef<HTMLDialogElement>(null);
@@ -32,6 +35,7 @@ export default function FormularioProjeto({
   const [erro, setErro] = useState<string | null>(null);
 
   const editando = Boolean(projeto);
+  const statusFixo = !mostrarStatus;
 
   function abrir() {
     setErro(null);
@@ -54,7 +58,9 @@ export default function FormularioProjeto({
     const corpo = {
       nome: dados.get("nome"),
       descricao: dados.get("descricao"),
-      status: dados.get("status"),
+      status: statusFixo
+        ? (projeto?.status ?? statusPadrao)
+        : dados.get("status"),
       stack: String(dados.get("stack") ?? "")
         .split(",")
         .map((item) => item.trim())
@@ -92,6 +98,18 @@ export default function FormularioProjeto({
       setEnviando(false);
     }
   }
+
+  const campoPrazo = (
+    <label className="flex flex-col gap-1 text-sm">
+      Prazo
+      <input
+        type="date"
+        name="prazo"
+        defaultValue={projeto ? paraTextoData(projeto.prazo) : ""}
+        className={CAMPOS}
+      />
+    </label>
+  );
 
   return (
     <>
@@ -144,32 +162,30 @@ export default function FormularioProjeto({
             />
           </label>
 
-          <div className="grid gap-4 sm:grid-cols-2">
-            <label className="flex flex-col gap-1 text-sm">
-              Status
-              <select
-                name="status"
-                defaultValue={projeto?.status ?? statusPadrao}
-                className={CAMPOS}
-              >
-                {STATUS_PROJETO.map((status) => (
-                  <option key={status} value={status} className="bg-[#131B2E]">
-                    {ROTULOS_STATUS[status]}
-                  </option>
-                ))}
-              </select>
-            </label>
+          {statusFixo ? (
+            campoPrazo
+          ) : (
+            <div className="grid gap-4 sm:grid-cols-2">
+              <label className="flex flex-col gap-1 text-sm">
+                Status
+                <select
+                  name="status"
+                  defaultValue={projeto?.status ?? statusPadrao}
+                  className={CAMPOS}
+                >
+                  {STATUS_PROJETO.map((status) => (
+                    <option key={status} value={status} className="bg-[#131B2E]">
+                      {(editando
+                        ? ROTULOS_STATUS[status]
+                        : ROTULOS_STATUS_NOVO_PROJETO[status])}
+                    </option>
+                  ))}
+                </select>
+              </label>
 
-            <label className="flex flex-col gap-1 text-sm">
-              Prazo
-              <input
-                type="date"
-                name="prazo"
-                defaultValue={projeto ? paraTextoData(projeto.prazo) : ""}
-                className={CAMPOS}
-              />
-            </label>
-          </div>
+              {campoPrazo}
+            </div>
+          )}
 
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="flex flex-col gap-1 text-sm">

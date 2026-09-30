@@ -9,6 +9,7 @@ type ListaProjetosProps = {
   descricao: string;
   projetos: Projeto[];
   statusPadrao?: StatusProjeto;
+  mostrarStatus?: boolean;
   children?: ReactNode;
 };
 
@@ -18,6 +19,7 @@ export default function ListaProjetos({
   descricao,
   projetos,
   statusPadrao,
+  mostrarStatus,
   children,
 }: ListaProjetosProps) {
   return (
@@ -25,7 +27,11 @@ export default function ListaProjetos({
       <header className="flex flex-col gap-1">
         <div className="flex justify-between">
           <h1 className="text-white text-2xl font-bold">{titulo}</h1>
-          <BotaoNovoProjeto rotulo={botao} statusPadrao={statusPadrao} />
+          <BotaoNovoProjeto
+            rotulo={botao}
+            statusPadrao={statusPadrao}
+            mostrarStatus={mostrarStatus}
+          />
         </div>
         <p className="text-[#94A3B8] text-sm">{descricao}</p>
       </header>
