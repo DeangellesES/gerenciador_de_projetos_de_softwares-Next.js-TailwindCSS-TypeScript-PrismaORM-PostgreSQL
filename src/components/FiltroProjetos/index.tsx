@@ -9,7 +9,8 @@ type Categoria = "todos" | StatusProjeto;
 const categorias: { valor: Categoria; rotulo: string }[] = [
   { valor: "todos", rotulo: "Todos" },
   { valor: "ativo", rotulo: "Em Andamento" },
-  { valor: "concluido", rotulo: "Concluídos" },
+  { valor: "concluido", rotulo: "Iniciado" },
+  { valor: "ideia", rotulo: "Finalizando" },
 ];
 
 function contarPorStatus(projetos: Projeto[], status: StatusProjeto) {
