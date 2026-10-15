@@ -4,7 +4,6 @@ import { useRef, useState, type FormEvent, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { X } from "lucide-react";
 import {
-  ROTULOS_STATUS,
   ROTULOS_STATUS_NOVO_PROJETO,
   STATUS_PROJETO,
   paraTextoData,
@@ -175,9 +174,7 @@ export default function FormularioProjeto({
                 >
                   {STATUS_PROJETO.map((status) => (
                     <option key={status} value={status} className="bg-[#131B2E]">
-                      {(editando
-                        ? ROTULOS_STATUS[status]
-                        : ROTULOS_STATUS_NOVO_PROJETO[status])}
+                      {ROTULOS_STATUS_NOVO_PROJETO[status]}
                     </option>
                   ))}
                 </select>
