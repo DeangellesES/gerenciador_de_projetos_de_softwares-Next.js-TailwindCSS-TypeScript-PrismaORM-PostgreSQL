@@ -7,14 +7,16 @@ import {
 } from "@/lib/projetos";
 
 export type FiltroProjetos = {
-  status?: StatusProjeto;
+  status?: StatusProjeto | StatusProjeto[];
   busca?: string;
 };
 
 const ordemPorStatus: Record<StatusProjeto, number> = {
   ativo: 0,
-  concluido: 1,
-  ideia: 2,
+  iniciando: 1,
+  finalizando: 2,
+  concluido: 3,
+  ideia: 4,
 };
 
 export async function listarProjetos(
@@ -24,7 +26,7 @@ export async function listarProjetos(
 
   const projetos = await getPrisma().projeto.findMany({
     where: {
-      status,
+      status: Array.isArray(status) ? { in: status } : status,
       ...(busca
         ? {
             OR: [
@@ -54,7 +56,13 @@ export async function contarProjetos(): Promise<Record<StatusProjeto, number>> {
     _count: { _all: true },
   });
 
-  const contagem: Record<StatusProjeto, number> = { ativo: 0, concluido: 0, ideia: 0 };
+  const contagem: Record<StatusProjeto, number> = {
+    ativo: 0,
+    iniciando: 0,
+    finalizando: 0,
+    concluido: 0,
+    ideia: 0,
+  };
 
   for (const grupo of grupos) {
     contagem[grupo.status] = grupo._count._all;

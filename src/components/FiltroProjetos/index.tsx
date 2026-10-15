@@ -2,16 +2,14 @@
 
 import { useState } from "react";
 import BuscaProjetos from "@/components/BuscaProjetos";
-import type { Projeto, StatusProjeto } from "@/lib/projetos";
+import {
+  ROTULOS_STATUS,
+  STATUS_PROJETO,
+  type Projeto,
+  type StatusProjeto,
+} from "@/lib/projetos";
 
 type Categoria = "todos" | StatusProjeto;
-
-const categorias: { valor: Categoria; rotulo: string }[] = [
-  { valor: "todos", rotulo: "Todos" },
-  { valor: "ativo", rotulo: "Em Andamento" },
-  { valor: "concluido", rotulo: "Iniciando" },
-  { valor: "ideia", rotulo: "Finalizando" },
-];
 
 function contarPorStatus(projetos: Projeto[], status: StatusProjeto) {
   return projetos.filter((projeto) => projeto.status === status).length;
@@ -20,11 +18,13 @@ function contarPorStatus(projetos: Projeto[], status: StatusProjeto) {
 type FiltroProjetosProps = {
   projetos: Projeto[];
   mostrarCategorias?: boolean;
+  statusDisponiveis?: StatusProjeto[];
 };
 
 export default function FiltroProjetos({
   projetos,
   mostrarCategorias = true,
+  statusDisponiveis = [...STATUS_PROJETO],
 }: FiltroProjetosProps) {
   const [categoria, setCategoria] = useState<Categoria>("todos");
 
@@ -32,6 +32,17 @@ export default function FiltroProjetos({
     categoria === "todos"
       ? projetos
       : projetos.filter((projeto) => projeto.status === categoria);
+
+  const categoriasVisiveis: { valor: Categoria; rotulo: string; total: number }[] = [
+    { valor: "todos", rotulo: "Todos", total: projetos.length },
+    ...statusDisponiveis
+      .filter((status) => contarPorStatus(projetos, status) > 0)
+      .map((status) => ({
+        valor: status,
+        rotulo: ROTULOS_STATUS[status],
+        total: contarPorStatus(projetos, status),
+      })),
+  ];
 
   return (
     <>
@@ -41,12 +52,8 @@ export default function FiltroProjetos({
           aria-label="Filtrar projetos por categoria"
           className="flex gap-2 bg-[#080F21] w-fit p-2 rounded-lg"
         >
-          {categorias.map(({ valor, rotulo }) => {
+          {categoriasVisiveis.map(({ valor, rotulo, total }) => {
             const selecionado = valor === categoria;
-            const total =
-              valor === "todos"
-                ? projetos.length
-                : contarPorStatus(projetos, valor);
 
             return (
               <button

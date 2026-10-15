@@ -1,17 +1,33 @@
-export const STATUS_PROJETO = ["ativo", "concluido", "ideia"] as const;
+export const STATUS_PROJETO = [
+  "ativo",
+  "iniciando",
+  "finalizando",
+  "concluido",
+  "ideia",
+] as const;
 
 export type StatusProjeto = (typeof STATUS_PROJETO)[number];
 
+export const STATUS_MEUS_PROJETOS: StatusProjeto[] = [
+  "ativo",
+  "iniciando",
+  "finalizando",
+];
+
 export const ROTULOS_STATUS: Record<StatusProjeto, string> = {
   ativo: "Em andamento",
+  iniciando: "Iniciando",
+  finalizando: "Finalizando",
   concluido: "Concluído",
   ideia: "Ideia",
 };
 
 export const ROTULOS_STATUS_NOVO_PROJETO: Record<StatusProjeto, string> = {
   ativo: "Em andamento",
-  concluido: "Iniciando",
-  ideia: "Finalizando",
+  iniciando: "Iniciando",
+  finalizando: "Finalizando",
+  concluido: "Concluído",
+  ideia: "Ideia",
 };
 
 export type Projeto = {

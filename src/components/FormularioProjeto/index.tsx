@@ -16,6 +16,7 @@ type FormularioProjetoProps = {
   projeto?: Projeto;
   statusPadrao?: StatusProjeto;
   mostrarStatus?: boolean;
+  statusOpcoes?: StatusProjeto[];
 };
 
 const CAMPOS =
@@ -26,6 +27,7 @@ export default function FormularioProjeto({
   projeto,
   statusPadrao = "ativo",
   mostrarStatus = true,
+  statusOpcoes = [...STATUS_PROJETO],
 }: FormularioProjetoProps) {
   const router = useRouter();
   const dialogo = useRef<HTMLDialogElement>(null);
@@ -35,6 +37,10 @@ export default function FormularioProjeto({
 
   const editando = Boolean(projeto);
   const statusFixo = !mostrarStatus;
+  const opcoesStatus =
+    projeto && !statusOpcoes.includes(projeto.status)
+      ? [...statusOpcoes, projeto.status]
+      : statusOpcoes;
 
   function abrir() {
     setErro(null);
@@ -172,7 +178,7 @@ export default function FormularioProjeto({
                   defaultValue={projeto?.status ?? statusPadrao}
                   className={CAMPOS}
                 >
-                  {STATUS_PROJETO.map((status) => (
+                  {opcoesStatus.map((status) => (
                     <option key={status} value={status} className="bg-[#131B2E]">
                       {ROTULOS_STATUS_NOVO_PROJETO[status]}
                     </option>

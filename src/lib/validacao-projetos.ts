@@ -34,7 +34,10 @@ function validarTexto(
 
 function validarStatus(valor: unknown): Validacao<StatusProjeto> {
   if (!ehStatusProjeto(valor)) {
-    return { ok: false, erro: "Status inválido. Use ativo, concluido ou ideia." };
+    return {
+      ok: false,
+      erro: "Status inválido. Use ativo, iniciando, finalizando, concluido ou ideia.",
+    };
   }
 
   return { ok: true, valor };

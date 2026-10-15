@@ -8,15 +8,21 @@ type BotaoNovoProjetoProps = {
   rotulo: string;
   statusPadrao?: StatusProjeto;
   mostrarStatus?: boolean;
+  statusOpcoes?: StatusProjeto[];
 };
 
 export default function BotaoNovoProjeto({
   rotulo,
   statusPadrao,
   mostrarStatus,
+  statusOpcoes,
 }: BotaoNovoProjetoProps) {
   return (
-    <FormularioProjeto statusPadrao={statusPadrao} mostrarStatus={mostrarStatus}>
+    <FormularioProjeto
+      statusPadrao={statusPadrao}
+      mostrarStatus={mostrarStatus}
+      statusOpcoes={statusOpcoes}
+    >
       <button
         type="button"
         className="text-white bg-blue-400 py-2 px-4 rounded-md flex gap-1 items-center cursor-pointer"

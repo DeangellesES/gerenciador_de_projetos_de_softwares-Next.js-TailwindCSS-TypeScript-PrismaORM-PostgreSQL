@@ -9,6 +9,8 @@ import {
 
 const cores: Record<StatusProjeto, { barra: string; badge: string }> = {
   ativo: { barra: "bg-sky-400", badge: "bg-sky-400/15 text-sky-300" },
+  iniciando: { barra: "bg-cyan-400", badge: "bg-cyan-400/15 text-cyan-300" },
+  finalizando: { barra: "bg-violet-400", badge: "bg-violet-400/15 text-violet-300" },
   concluido: { barra: "bg-emerald-400", badge: "bg-emerald-400/15 text-emerald-300" },
   ideia: { barra: "bg-amber-400", badge: "bg-amber-400/15 text-amber-300" },
 };

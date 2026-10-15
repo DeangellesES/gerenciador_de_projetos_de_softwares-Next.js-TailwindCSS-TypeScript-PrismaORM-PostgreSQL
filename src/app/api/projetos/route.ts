@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
 
   if (status && !ehStatusProjeto(status)) {
     return NextResponse.json(
-      { erro: "Status inválido. Use ativo, concluido ou ideia." },
+      { erro: "Status inválido. Use ativo, iniciando, finalizando, concluido ou ideia." },
       { status: 400 },
     );
   }

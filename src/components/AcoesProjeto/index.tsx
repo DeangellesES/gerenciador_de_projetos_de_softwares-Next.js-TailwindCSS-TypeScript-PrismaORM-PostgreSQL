@@ -4,7 +4,12 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { CheckCircle2, Pencil, Trash2 } from "lucide-react";
 import FormularioProjeto from "@/components/FormularioProjeto";
-import type { Projeto, StatusProjeto } from "@/lib/projetos";
+import {
+  STATUS_MEUS_PROJETOS,
+  STATUS_PROJETO,
+  type Projeto,
+  type StatusProjeto,
+} from "@/lib/projetos";
 
 type AcoesProjetoProps = {
   projeto: Projeto;
@@ -15,6 +20,12 @@ export default function AcoesProjeto({ projeto }: AcoesProjetoProps) {
   const [erro, setErro] = useState<string | null>(null);
   const [removendo, setRemovendo] = useState(false);
   const [concluindo, setConcluindo] = useState(false);
+
+  const statusOpcoes: StatusProjeto[] = STATUS_MEUS_PROJETOS.includes(
+    projeto.status,
+  )
+    ? STATUS_MEUS_PROJETOS
+    : [...STATUS_PROJETO];
 
   async function excluir() {
     const confirmado = window.confirm(
@@ -73,7 +84,7 @@ export default function AcoesProjeto({ projeto }: AcoesProjetoProps) {
 
   return (
     <div className="flex items-center gap-2">
-      <FormularioProjeto projeto={projeto}>
+      <FormularioProjeto projeto={projeto} statusOpcoes={statusOpcoes}>
         <button
           type="button"
           className="text-sm text-[#94A3B8] hover:text-white border border-white/10 hover:border-white/25 px-3 py-1.5 rounded-md flex items-center gap-1.5 transition-colors cursor-pointer"
@@ -83,7 +94,7 @@ export default function AcoesProjeto({ projeto }: AcoesProjetoProps) {
         </button>
       </FormularioProjeto>
 
-      {projeto.status === "ideia" ? (
+      {projeto.status === "finalizando" ? (
         <button
           type="button"
           onClick={() => alterarStatus("concluido")}

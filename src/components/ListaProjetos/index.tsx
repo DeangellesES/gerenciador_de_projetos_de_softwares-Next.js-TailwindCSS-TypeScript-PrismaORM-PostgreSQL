@@ -11,6 +11,7 @@ type ListaProjetosProps = {
   statusPadrao?: StatusProjeto;
   mostrarStatus?: boolean;
   mostrarCategorias?: boolean;
+  statusDisponiveis?: StatusProjeto[];
   children?: ReactNode;
 };
 
@@ -22,6 +23,7 @@ export default function ListaProjetos({
   statusPadrao,
   mostrarStatus,
   mostrarCategorias,
+  statusDisponiveis,
   children,
 }: ListaProjetosProps) {
   return (
@@ -33,6 +35,7 @@ export default function ListaProjetos({
             rotulo={botao}
             statusPadrao={statusPadrao}
             mostrarStatus={mostrarStatus}
+            statusOpcoes={statusDisponiveis}
           />
         </div>
         <p className="text-[#94A3B8] text-sm">{descricao}</p>
@@ -42,6 +45,7 @@ export default function ListaProjetos({
       <FiltroProjetos
         projetos={projetos}
         mostrarCategorias={mostrarCategorias}
+        statusDisponiveis={statusDisponiveis}
       />
     </div>
   );

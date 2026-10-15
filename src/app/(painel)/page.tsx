@@ -1,45 +1,48 @@
 import Link from "next/link";
 import { CircleCheck, FolderOpenDot, Lightbulb } from "lucide-react";
 import { contarProjetos } from "@/lib/repositorio-projetos";
-import type { StatusProjeto } from "@/lib/projetos";
+import { STATUS_PROJETO, type StatusProjeto } from "@/lib/projetos";
 
 const secoes: {
   href: string;
   titulo: string;
   descricao: string;
-  status: StatusProjeto;
+  status: StatusProjeto[];
   Icone: typeof FolderOpenDot;
 }[] = [
   {
     href: "/projetos",
     titulo: "Meus Projetos",
     descricao: "Projetos em desenvolvimento, com progresso e prazo atualizados.",
-    status: "ativo",
+    status: ["ativo", "iniciando", "finalizando"],
     Icone: FolderOpenDot,
   },
   {
     href: "/projetos-concluidos",
     titulo: "Projetos Finalizados",
     descricao: "Trabalhos finalizados e disponíveis no portfólio.",
-    status: "concluido",
+    status: ["concluido"],
     Icone: CircleCheck,
   },
   {
     href: "/ideias-futuras",
     titulo: "Ideias Futuras",
     descricao: "Ideias guardadas para quando houver tempo e motivation.",
-    status: "ideia",
+    status: ["ideia"],
     Icone: Lightbulb,
   },
 ];
 
 export default async function VisaoGeral() {
   const contagem = await contarProjetos();
-  const total = contagem.ativo + contagem.concluido + contagem.ideia;
+  const total = STATUS_PROJETO.reduce(
+    (soma, status) => soma + contagem[status],
+    0,
+  );
 
   const resumo = secoes.map((secao) => ({
     ...secao,
-    total: contagem[secao.status],
+    total: secao.status.reduce((soma, status) => soma + contagem[status], 0),
   }));
 
   return (
