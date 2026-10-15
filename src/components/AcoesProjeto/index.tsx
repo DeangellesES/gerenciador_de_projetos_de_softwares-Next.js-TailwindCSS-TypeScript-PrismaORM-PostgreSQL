@@ -83,7 +83,7 @@ export default function AcoesProjeto({ projeto }: AcoesProjetoProps) {
         </button>
       </FormularioProjeto>
 
-      {projeto.status !== "concluido" ? (
+      {projeto.status === "ideia" ? (
         <button
           type="button"
           onClick={() => alterarStatus("concluido")}
