@@ -1,7 +1,8 @@
 import Link from "next/link";
-import { CalendarDays } from "lucide-react";
+import { CalendarDays, SquareKanban } from "lucide-react";
 import {
   ROTULOS_STATUS,
+  STATUS_MEUS_PROJETOS,
   formatarData,
   type Projeto,
   type StatusProjeto,
@@ -21,6 +22,7 @@ type CartaoProjetoProps = {
 
 export default function CartaoProjeto({ projeto }: CartaoProjetoProps) {
   const { barra, badge } = cores[projeto.status];
+  const emMeusProjetos = STATUS_MEUS_PROJETOS.includes(projeto.status);
 
   return (
     <article className="bg-[#131B2E] border border-white/10 rounded-xl p-5 flex flex-col gap-4 transition-colors hover:border-white/25">
@@ -71,12 +73,23 @@ export default function CartaoProjeto({ projeto }: CartaoProjetoProps) {
         ) : (
           <span className="text-xs text-[#64748B]">Sem prazo definido</span>
         )}
-        <Link
-          href={`/projetos/${projeto.id}`}
-          className="text-sm text-sky-300 hover:text-sky-200 transition-colors"
-        >
-          Ver detalhes
-        </Link>
+        <div className="flex items-center gap-2">
+          {emMeusProjetos ? (
+            <Link
+              href={`/projetos/${projeto.id}/kanban`}
+              className="text-sm text-[#D1D5DB] bg-white/5 border border-white/10 hover:border-white/25 hover:text-white px-3 py-1.5 rounded-md flex items-center gap-1.5 transition-colors"
+            >
+              <SquareKanban size={14} />
+              Kanban
+            </Link>
+          ) : null}
+          <Link
+            href={`/projetos/${projeto.id}`}
+            className="text-sm text-sky-300 hover:text-sky-200 transition-colors"
+          >
+            Ver detalhes
+          </Link>
+        </div>
       </div>
     </article>
   );

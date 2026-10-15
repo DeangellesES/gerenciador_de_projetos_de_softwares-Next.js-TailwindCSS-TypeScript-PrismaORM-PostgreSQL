@@ -5,6 +5,7 @@ const PAGINAS = ["/", "/projetos", "/projetos-concluidos", "/ideias-futuras"] as
 export function revalidarProjetos(id?: string) {
   if (id) {
     revalidatePath(`/projetos/${id}`);
+    revalidatePath(`/projetos/${id}/kanban`);
   }
 
   for (const pagina of PAGINAS) {

@@ -1,7 +1,10 @@
 import "dotenv/config";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "../src/generated/prisma/client";
-import type { StatusProjeto } from "../src/generated/prisma/enums";
+import type {
+  ColunaKanban,
+  StatusProjeto,
+} from "../src/generated/prisma/enums";
 
 const projetos: {
   id: string;
@@ -97,6 +100,64 @@ const projetos: {
   },
 ];
 
+const tarefas: {
+  id: string;
+  projetoId: string;
+  titulo: string;
+  descricao?: string;
+  coluna: ColunaKanban;
+  ordem: number;
+}[] = [
+  {
+    id: "gerenciador-tarefa-1",
+    projetoId: "gerenciador",
+    titulo: "Modelar banco de dados",
+    descricao: "Definir entidades de projetos e tarefas no Prisma.",
+    coluna: "done",
+    ordem: 0,
+  },
+  {
+    id: "gerenciador-tarefa-2",
+    projetoId: "gerenciador",
+    titulo: "Listagem e filtros de projetos",
+    descricao: "Cards com busca por nome, stack e status.",
+    coluna: "done",
+    ordem: 1,
+  },
+  {
+    id: "gerenciador-tarefa-3",
+    projetoId: "gerenciador",
+    titulo: "Quadro Kanban por projeto",
+    descricao: "Colunas To, Doing e Done com arrastar e soltar.",
+    coluna: "doing",
+    ordem: 0,
+  },
+  {
+    id: "gerenciador-tarefa-4",
+    projetoId: "gerenciador",
+    titulo: "Edição de tarefas",
+    descricao: "Permitir editar título, descrição e coluna de cada tarefa.",
+    coluna: "doing",
+    ordem: 1,
+  },
+  {
+    id: "gerenciador-tarefa-5",
+    projetoId: "gerenciador",
+    titulo: "Autenticação de usuários",
+    descricao: "Login e permissões por usuário.",
+    coluna: "to",
+    ordem: 0,
+  },
+  {
+    id: "gerenciador-tarefa-6",
+    projetoId: "gerenciador",
+    titulo: "Notificações de prazo",
+    descricao: "Alertar quando o prazo de um projeto estiver próximo.",
+    coluna: "to",
+    ordem: 1,
+  },
+];
+
 async function main() {
   const connectionString = process.env.DATABASE_URL;
 
@@ -113,6 +174,14 @@ async function main() {
       where: { id: projeto.id },
       update: { ...dados, prazo: prazo ? new Date(`${prazo}T00:00:00.000Z`) : null },
       create: { ...dados, prazo: prazo ? new Date(`${prazo}T00:00:00.000Z`) : null },
+    });
+  }
+
+  for (const tarefa of tarefas) {
+    await prisma.tarefa.upsert({
+      where: { id: tarefa.id },
+      update: tarefa,
+      create: tarefa,
     });
   }
 
