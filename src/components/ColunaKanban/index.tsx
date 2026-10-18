@@ -77,7 +77,7 @@ export default function ColunaKanban({
   }
 
   return (
-    <section className="bg-[#131B2E] border border-white/10 rounded-xl flex flex-col min-h-[24rem]">
+    <section className="bg-[#131B2E] border border-white/10 rounded-xl flex flex-col min-h-[24rem] mb-10">
       <header className="flex items-start justify-between gap-2 p-4 border-b border-white/10">
         <div>
           <h2 className="text-white font-semibold flex items-center gap-2">
