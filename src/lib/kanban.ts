@@ -6,7 +6,7 @@ export const ROTULOS_COLUNA: Record<
   ColunaKanban,
   { titulo: string; descricao: string }
 > = {
-  to: { titulo: "To", descricao: "O que precisa ser desenvolvido" },
+  to: { titulo: "To Do", descricao: "O que precisa ser desenvolvido" },
   doing: { titulo: "Doing", descricao: "O que está sendo desenvolvido" },
   done: { titulo: "Done", descricao: "O que já foi desenvolvido" },
 };
