@@ -43,20 +43,6 @@ function validarStatus(valor: unknown): Validacao<StatusProjeto> {
   return { ok: true, valor };
 }
 
-function validarProgresso(valor: unknown): Validacao<number | null> {
-  if (valor === null || valor === undefined || valor === "") {
-    return { ok: true, valor: null };
-  }
-
-  const progresso = Number(valor);
-
-  if (!Number.isInteger(progresso) || progresso < 0 || progresso > 100) {
-    return { ok: false, erro: "O progresso deve ser um número inteiro entre 0 e 100." };
-  }
-
-  return { ok: true, valor: progresso };
-}
-
 function validarStack(valor: unknown): Validacao<string[]> {
   if (valor === null || valor === undefined) {
     return { ok: true, valor: [] };
@@ -134,12 +120,6 @@ function validar(corpo: unknown, parcial: boolean): ResultadoValidacao {
     const resultado = validarStack(entrada.stack);
     if (!resultado.ok) return resultado;
     dados.stack = resultado.valor;
-  }
-
-  if (!parcial || "progresso" in entrada) {
-    const resultado = validarProgresso(entrada.progresso);
-    if (!resultado.ok) return resultado;
-    dados.progresso = resultado.valor;
   }
 
   if (!parcial || "prazo" in entrada) {

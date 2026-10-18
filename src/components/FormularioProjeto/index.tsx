@@ -58,7 +58,6 @@ export default function FormularioProjeto({
     setErro(null);
 
     const dados = new FormData(evento.currentTarget);
-    const progresso = String(dados.get("progresso") ?? "");
 
     const corpo = {
       nome: dados.get("nome"),
@@ -70,7 +69,6 @@ export default function FormularioProjeto({
         .split(",")
         .map((item) => item.trim())
         .filter(Boolean),
-      progresso: progresso === "" ? null : Number(progresso),
       prazo: dados.get("prazo") || null,
     };
 
@@ -192,19 +190,6 @@ export default function FormularioProjeto({
 
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="flex flex-col gap-1 text-sm">
-              Progresso (%)
-              <input
-                type="number"
-                name="progresso"
-                min={0}
-                max={100}
-                defaultValue={projeto?.progresso ?? ""}
-                className={CAMPOS}
-                placeholder="0 a 100"
-              />
-            </label>
-
-            <label className="flex flex-col gap-1 text-sm">
               Stack
               <input
                 name="stack"
@@ -214,6 +199,12 @@ export default function FormularioProjeto({
               />
             </label>
           </div>
+
+          <p className="text-xs text-[#94A3B8] border border-white/10 bg-white/5 rounded-md px-3 py-2">
+            O progresso é calculado automaticamente pelo quadro Kanban: cada
+            tarefa em To Do vale 0%, em Doing 50% e em Done 100%. Ao concluir o
+            projeto, ele vai para 100%.
+          </p>
 
           {erro ? <p className="text-sm text-red-300">{erro}</p> : null}
 

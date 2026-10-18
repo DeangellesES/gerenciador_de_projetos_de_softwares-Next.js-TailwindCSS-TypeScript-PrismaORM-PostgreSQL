@@ -47,7 +47,6 @@ export type DadosProjeto = {
   descricao: string;
   status: StatusProjeto;
   stack: string[];
-  progresso: number | null;
   prazo: Date | null;
 };
 

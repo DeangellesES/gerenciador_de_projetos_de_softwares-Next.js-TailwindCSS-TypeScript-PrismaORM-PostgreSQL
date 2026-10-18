@@ -4,6 +4,7 @@ import { useState } from "react";
 import ColunaKanban from "@/components/ColunaKanban";
 import {
   COLUNAS_KANBAN,
+  calcularProgresso,
   type ColunaKanban as Coluna,
   type Tarefa,
 } from "@/lib/kanban";
@@ -50,6 +51,31 @@ function aplicarMovimento(
   }
 
   return resultado;
+}
+
+function ProgressoKanban({ tarefas }: { tarefas: Tarefa[] }) {
+  const progresso = calcularProgresso(tarefas);
+  const concluidas = tarefas.filter((tarefa) => tarefa.coluna === "done").length;
+
+  return (
+    <div className="bg-[#131B2E] border border-white/10 rounded-xl px-5 py-4 flex flex-col gap-3">
+      <div className="flex items-center justify-between text-sm">
+        <span className="text-white font-medium">Progresso do projeto</span>
+        <span className="text-[#94A3B8]">
+          {concluidas}/{tarefas.length} tarefas concluídas · {progresso}%
+        </span>
+      </div>
+      <div className="h-2 rounded-full bg-white/10 overflow-hidden">
+        <div
+          className="h-full rounded-full bg-emerald-400 transition-all"
+          style={{ width: `${progresso}%` }}
+        />
+      </div>
+      <p className="text-xs text-[#64748B]">
+        Cada tarefa em To Do vale 0%, em Doing 50% e em Done 100%.
+      </p>
+    </div>
+  );
 }
 
 export default function QuadroKanban({
@@ -133,24 +159,28 @@ export default function QuadroKanban({
   }
 
   return (
-    <div className="grid gap-4 lg:grid-cols-3 items-start">
-      {COLUNAS_KANBAN.map((coluna) => (
-        <ColunaKanban
-          key={coluna}
-          coluna={coluna}
-          projetoId={projetoId}
-          tarefas={tarefas
-            .filter((tarefa) => tarefa.coluna === coluna)
-            .sort((a, b) => a.ordem - b.ordem)}
-          arrastandoId={arrastandoId}
-          onIniciarArrasto={setArrastandoId}
-          onFinalizarArrasto={() => setArrastandoId(null)}
-          onSoltar={soltar}
-          onAdicionar={adicionar}
-          onAtualizar={atualizar}
-          onRemover={remover}
-        />
-      ))}
+    <div className="flex flex-col gap-5">
+      <ProgressoKanban tarefas={tarefas} />
+
+      <div className="grid gap-4 lg:grid-cols-3 items-start">
+        {COLUNAS_KANBAN.map((coluna) => (
+          <ColunaKanban
+            key={coluna}
+            coluna={coluna}
+            projetoId={projetoId}
+            tarefas={tarefas
+              .filter((tarefa) => tarefa.coluna === coluna)
+              .sort((a, b) => a.ordem - b.ordem)}
+            arrastandoId={arrastandoId}
+            onIniciarArrasto={setArrastandoId}
+            onFinalizarArrasto={() => setArrastandoId(null)}
+            onSoltar={soltar}
+            onAdicionar={adicionar}
+            onAtualizar={atualizar}
+            onRemover={remover}
+          />
+        ))}
+      </div>
     </div>
   );
 }

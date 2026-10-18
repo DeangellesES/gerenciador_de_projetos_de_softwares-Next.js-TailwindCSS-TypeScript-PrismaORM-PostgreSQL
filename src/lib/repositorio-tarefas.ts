@@ -1,4 +1,5 @@
 import { getPrisma } from "@/lib/db";
+import { recalcularProgresso } from "@/lib/repositorio-projetos";
 import type {
   ColunaKanban,
   DadosTarefa,
@@ -21,9 +22,13 @@ export async function criarTarefa(
     where: { projetoId, coluna: dados.coluna },
   });
 
-  return prisma.tarefa.create({
+  const tarefa = await prisma.tarefa.create({
     data: { ...dados, projetoId, ordem },
   });
+
+  await recalcularProgresso(projetoId);
+
+  return tarefa;
 }
 
 export async function atualizarTarefa(
@@ -72,9 +77,17 @@ export async function atualizarTarefa(
     ),
   );
 
+  if (coluna !== undefined) {
+    await recalcularProgresso(atual.projetoId);
+  }
+
   return prisma.tarefa.findUnique({ where: { id } });
 }
 
 export async function removerTarefa(id: string): Promise<Tarefa | null> {
-  return getPrisma().tarefa.delete({ where: { id } });
+  const tarefa = await getPrisma().tarefa.delete({ where: { id } });
+
+  await recalcularProgresso(tarefa.projetoId);
+
+  return tarefa;
 }

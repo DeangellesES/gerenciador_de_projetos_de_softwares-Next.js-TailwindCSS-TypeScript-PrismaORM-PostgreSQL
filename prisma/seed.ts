@@ -6,13 +6,18 @@ import type {
   StatusProjeto,
 } from "../src/generated/prisma/enums";
 
+const PESO_COLUNA: Record<ColunaKanban, number> = {
+  to: 0,
+  doing: 50,
+  done: 100,
+};
+
 const projetos: {
   id: string;
   nome: string;
   descricao: string;
   status: StatusProjeto;
   stack: string[];
-  progresso?: number;
   prazo?: string;
 }[] = [
   {
@@ -22,7 +27,6 @@ const projetos: {
       "Painel web para organizar projetos de desenvolvimento, com acompanhamento de status e prazo.",
     status: "ativo",
     stack: ["Next.js", "TypeScript", "Tailwind CSS"],
-    progresso: 65,
     prazo: "2026-10-15",
   },
   {
@@ -32,7 +36,6 @@ const projetos: {
       "Serviço REST para CRUD de tarefas com autenticação por token e paginação.",
     status: "ativo",
     stack: ["Node.js", "PostgreSQL", "Docker"],
-    progresso: 30,
     prazo: "2026-12-01",
   },
   {
@@ -42,7 +45,6 @@ const projetos: {
       "Visualização de indicadores de produtividade com gráficos e filtros por período.",
     status: "ativo",
     stack: ["React", "Chart.js"],
-    progresso: 12,
   },
   {
     id: "portfolio",
@@ -51,7 +53,6 @@ const projetos: {
       "Site estático de apresentação com estudos de caso dos projetos concluídos.",
     status: "concluido",
     stack: ["Next.js", "Tailwind CSS"],
-    progresso: 100,
     prazo: "2026-03-20",
   },
   {
@@ -61,7 +62,6 @@ const projetos: {
       "Página de conversão com formulário de contato e teste A/B do CTA principal.",
     status: "concluido",
     stack: ["Astro", "Vite"],
-    progresso: 100,
     prazo: "2026-01-08",
   },
   {
@@ -71,7 +71,6 @@ const projetos: {
       "Bot para avisos automáticos de deploy e resumo diário de commits.",
     status: "concluido",
     stack: ["Python", "Telegram API"],
-    progresso: 100,
     prazo: "2025-11-30",
   },
   {
@@ -158,6 +157,23 @@ const tarefas: {
   },
 ];
 
+function calcularProgresso(
+  status: StatusProjeto,
+  colunas: ColunaKanban[],
+): number {
+  if (status === "concluido") {
+    return 100;
+  }
+
+  if (status === "ideia" || colunas.length === 0) {
+    return 0;
+  }
+
+  const soma = colunas.reduce((total, coluna) => total + PESO_COLUNA[coluna], 0);
+
+  return Math.round(soma / colunas.length);
+}
+
 async function main() {
   const connectionString = process.env.DATABASE_URL;
 
@@ -169,11 +185,16 @@ async function main() {
 
   for (const projeto of projetos) {
     const { prazo, ...dados } = projeto;
+    const colunas = tarefas
+      .filter((tarefa) => tarefa.projetoId === projeto.id)
+      .map((tarefa) => tarefa.coluna);
+    const progresso = calcularProgresso(projeto.status, colunas);
+    const prazoEmData = prazo ? new Date(`${prazo}T00:00:00.000Z`) : null;
 
     await prisma.projeto.upsert({
       where: { id: projeto.id },
-      update: { ...dados, prazo: prazo ? new Date(`${prazo}T00:00:00.000Z`) : null },
-      create: { ...dados, prazo: prazo ? new Date(`${prazo}T00:00:00.000Z`) : null },
+      update: { ...dados, progresso, prazo: prazoEmData },
+      create: { ...dados, progresso, prazo: prazoEmData },
     });
   }
 

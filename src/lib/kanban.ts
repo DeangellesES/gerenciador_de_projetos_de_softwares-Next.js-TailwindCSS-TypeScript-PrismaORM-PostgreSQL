@@ -11,6 +11,12 @@ export const ROTULOS_COLUNA: Record<
   done: { titulo: "Done", descricao: "O que já foi desenvolvido" },
 };
 
+export const PESO_COLUNA: Record<ColunaKanban, number> = {
+  to: 0,
+  doing: 50,
+  done: 100,
+};
+
 export type Tarefa = {
   id: string;
   titulo: string;
@@ -33,6 +39,21 @@ export function ehColunaKanban(valor: unknown): valor is ColunaKanban {
     typeof valor === "string" &&
     COLUNAS_KANBAN.includes(valor as ColunaKanban)
   );
+}
+
+export function calcularProgresso(
+  tarefas: { coluna: ColunaKanban }[],
+): number {
+  if (tarefas.length === 0) {
+    return 0;
+  }
+
+  const soma = tarefas.reduce(
+    (total, tarefa) => total + PESO_COLUNA[tarefa.coluna],
+    0,
+  );
+
+  return Math.round(soma / tarefas.length);
 }
 
 export function agruparPorColuna(tarefas: Tarefa[]): Record<ColunaKanban, Tarefa[]> {

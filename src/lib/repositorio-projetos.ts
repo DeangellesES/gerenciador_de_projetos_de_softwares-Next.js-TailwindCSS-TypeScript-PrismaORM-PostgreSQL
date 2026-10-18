@@ -1,4 +1,5 @@
 import { getPrisma } from "@/lib/db";
+import { calcularProgresso } from "@/lib/kanban";
 import {
   gerarSlug,
   type DadosProjeto,
@@ -71,6 +72,38 @@ export async function contarProjetos(): Promise<Record<StatusProjeto, number>> {
   return contagem;
 }
 
+function progressoPorStatus(
+  status: StatusProjeto,
+  tarefas: { coluna: "to" | "doing" | "done" }[],
+): number {
+  if (status === "concluido") {
+    return 100;
+  }
+
+  if (status === "ideia") {
+    return 0;
+  }
+
+  return calcularProgresso(tarefas);
+}
+
+export async function recalcularProgresso(projetoId: string): Promise<void> {
+  const prisma = getPrisma();
+  const projeto = await prisma.projeto.findUnique({
+    where: { id: projetoId },
+    select: { status: true, tarefas: { select: { coluna: true } } },
+  });
+
+  if (!projeto) {
+    return;
+  }
+
+  await prisma.projeto.update({
+    where: { id: projetoId },
+    data: { progresso: progressoPorStatus(projeto.status, projeto.tarefas) },
+  });
+}
+
 async function garantirSlugUnico(nome: string): Promise<string> {
   const raiz = gerarSlug(nome);
   let slug = raiz;
@@ -88,7 +121,11 @@ async function garantirSlugUnico(nome: string): Promise<string> {
 
 export async function criarProjeto(dados: DadosProjeto): Promise<Projeto> {
   return getPrisma().projeto.create({
-    data: { ...dados, id: await garantirSlugUnico(dados.nome) },
+    data: {
+      ...dados,
+      id: await garantirSlugUnico(dados.nome),
+      progresso: dados.status === "concluido" ? 100 : 0,
+    },
   });
 }
 
@@ -96,7 +133,16 @@ export async function atualizarProjeto(
   id: string,
   dados: Partial<DadosProjeto>,
 ): Promise<Projeto | null> {
-  return getPrisma().projeto.update({ where: { id }, data: dados });
+  const prisma = getPrisma();
+  const projeto = await prisma.projeto.update({ where: { id }, data: dados });
+
+  if (dados.status !== undefined) {
+    await recalcularProgresso(id);
+
+    return prisma.projeto.findUnique({ where: { id } });
+  }
+
+  return projeto;
 }
 
 export async function removerProjeto(id: string): Promise<Projeto | null> {
