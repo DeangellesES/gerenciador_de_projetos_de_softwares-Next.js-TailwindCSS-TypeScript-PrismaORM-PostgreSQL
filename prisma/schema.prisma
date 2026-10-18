@@ -1,3 +1,4 @@
+
 generator client {
   provider            = "prisma-client"
   output              = "../src/generated/prisma"
@@ -30,11 +31,14 @@ model Projeto {
   stack        String[]
   progresso    Int?
   prazo        DateTime?     @db.Date
+  userId       String?       @map("user_id")
+  user         User?         @relation(fields: [userId], references: [id], onDelete: Cascade)
   criadoEm     DateTime      @default(now()) @map("criado_em")
   atualizadoEm DateTime      @updatedAt @map("atualizado_em")
   tarefas      Tarefa[]
 
   @@index([status])
+  @@index([userId])
   @@map("projetos")
 }
 
@@ -51,4 +55,68 @@ model Tarefa {
 
   @@index([projetoId, coluna, ordem])
   @@map("tarefas")
+}
+
+model User {
+  id            String    @id
+  name          String
+  email         String
+  emailVerified Boolean   @default(false)
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  sessions      Session[]
+  accounts      Account[]
+  projetos      Projeto[]
+
+  @@unique([email])
+  @@map("user")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+  @@index([userId])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([userId])
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+  @@map("verification")
 }

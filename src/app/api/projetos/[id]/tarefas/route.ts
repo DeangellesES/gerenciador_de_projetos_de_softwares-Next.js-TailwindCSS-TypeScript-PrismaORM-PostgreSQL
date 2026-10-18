@@ -4,6 +4,7 @@ import { criarTarefa, listarTarefas } from "@/lib/repositorio-tarefas";
 import { validarTarefa } from "@/lib/validacao-tarefas";
 import { respostaDeErro } from "@/lib/resposta-erro";
 import { revalidarProjetos } from "@/lib/paginas";
+import { exigirUsuarioNaApi } from "@/lib/sessao";
 
 type Contexto = {
   params: Promise<{ id: string }>;
@@ -12,10 +13,16 @@ type Contexto = {
 const PROJETO_NAO_ENCONTRADO = { erro: "Projeto não encontrado." };
 
 export async function GET(_request: NextRequest, { params }: Contexto) {
+  const sessao = await exigirUsuarioNaApi();
+
+  if (!sessao.ok) {
+    return sessao.resposta;
+  }
+
   const { id } = await params;
 
   try {
-    const projeto = await buscarProjetoPorId(id);
+    const projeto = await buscarProjetoPorId(sessao.usuario.id, id);
 
     if (!projeto) {
       return NextResponse.json(PROJETO_NAO_ENCONTRADO, { status: 404 });
@@ -28,6 +35,12 @@ export async function GET(_request: NextRequest, { params }: Contexto) {
 }
 
 export async function POST(request: NextRequest, { params }: Contexto) {
+  const sessao = await exigirUsuarioNaApi();
+
+  if (!sessao.ok) {
+    return sessao.resposta;
+  }
+
   const { id } = await params;
   const corpo = await request.json().catch(() => null);
   const validacao = validarTarefa(corpo);
@@ -37,7 +50,7 @@ export async function POST(request: NextRequest, { params }: Contexto) {
   }
 
   try {
-    const projeto = await buscarProjetoPorId(id);
+    const projeto = await buscarProjetoPorId(sessao.usuario.id, id);
 
     if (!projeto) {
       return NextResponse.json(PROJETO_NAO_ENCONTRADO, { status: 404 });

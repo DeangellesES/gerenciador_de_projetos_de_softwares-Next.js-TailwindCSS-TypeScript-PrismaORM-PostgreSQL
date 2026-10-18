@@ -5,6 +5,7 @@ import { ArrowLeft, CalendarDays } from "lucide-react";
 import AcoesProjeto from "@/components/AcoesProjeto";
 import { buscarProjetoPorId } from "@/lib/repositorio-projetos";
 import { ROTULOS_STATUS, formatarData } from "@/lib/projetos";
+import { exigirUsuarioNaPagina, getSessionUsuario } from "@/lib/sessao";
 
 export async function generateMetadata({
   params,
@@ -12,7 +13,8 @@ export async function generateMetadata({
   params: Promise<{ id: string }>;
 }): Promise<Metadata> {
   const { id } = await params;
-  const projeto = await buscarProjetoPorId(id);
+  const usuario = await getSessionUsuario();
+  const projeto = usuario ? await buscarProjetoPorId(usuario.id, id) : null;
 
   return { title: projeto ? projeto.nome : "Projeto não encontrado" };
 }
@@ -23,7 +25,8 @@ export default async function PaginaProjeto({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const projeto = await buscarProjetoPorId(id);
+  const usuario = await exigirUsuarioNaPagina();
+  const projeto = await buscarProjetoPorId(usuario.id, id);
 
   if (!projeto) {
     notFound();

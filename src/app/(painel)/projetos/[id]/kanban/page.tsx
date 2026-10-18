@@ -5,6 +5,7 @@ import { ArrowLeft, SquareKanban } from "lucide-react";
 import QuadroKanban from "@/components/QuadroKanban";
 import { buscarProjetoPorId } from "@/lib/repositorio-projetos";
 import { listarTarefas } from "@/lib/repositorio-tarefas";
+import { exigirUsuarioNaPagina, getSessionUsuario } from "@/lib/sessao";
 
 export async function generateMetadata({
   params,
@@ -12,7 +13,8 @@ export async function generateMetadata({
   params: Promise<{ id: string }>;
 }): Promise<Metadata> {
   const { id } = await params;
-  const projeto = await buscarProjetoPorId(id);
+  const usuario = await getSessionUsuario();
+  const projeto = usuario ? await buscarProjetoPorId(usuario.id, id) : null;
 
   return { title: projeto ? `Kanban · ${projeto.nome}` : "Projeto não encontrado" };
 }
@@ -23,7 +25,8 @@ export default async function PaginaKanban({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const projeto = await buscarProjetoPorId(id);
+  const usuario = await exigirUsuarioNaPagina();
+  const projeto = await buscarProjetoPorId(usuario.id, id);
 
   if (!projeto) {
     notFound();

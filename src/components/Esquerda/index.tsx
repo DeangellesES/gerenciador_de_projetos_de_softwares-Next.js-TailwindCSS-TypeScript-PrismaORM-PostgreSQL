@@ -1,14 +1,17 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
+import { useState } from "react";
 import {
   CircleCheck,
   FolderCode,
   FolderOpenDot,
   LayoutDashboard,
   Lightbulb,
+  LogOut,
 } from "lucide-react";
+import { authClient } from "@/lib/auth-client";
 
 const links = [
   { href: "/", rotulo: "Visão Geral", Icone: LayoutDashboard },
@@ -21,8 +24,23 @@ const links = [
   { href: "/ideias-futuras", rotulo: "Ideias Futuras", Icone: Lightbulb },
 ];
 
-export default function LadoEsquerdo() {
+type Props = {
+  usuario: { nome: string; email: string };
+};
+
+export default function LadoEsquerdo({ usuario }: Props) {
   const pathname = usePathname();
+  const router = useRouter();
+  const [saindo, setSaindo] = useState(false);
+
+  async function sair() {
+    setSaindo(true);
+    await authClient.signOut();
+    router.push("/login");
+    router.refresh();
+  }
+
+  const inicial = usuario.nome.trim().charAt(0).toUpperCase() || "U";
 
   return (
     <aside className="bg-[#131B2E] w-[20%] min-w-[15rem] h-screen shrink-0 flex flex-col border-r border-white/10">
@@ -56,6 +74,27 @@ export default function LadoEsquerdo() {
           );
         })}
       </nav>
+
+      <div className="mt-auto p-5 border-t border-white/10 flex items-center gap-3">
+        <span className="w-9 h-9 shrink-0 rounded-full bg-sky-400/15 border border-sky-400/40 text-[#7DD3FC] font-semibold flex items-center justify-center">
+          {inicial}
+        </span>
+        <div className="min-w-0 flex-1">
+          <p className="text-white text-sm font-medium truncate">
+            {usuario.nome}
+          </p>
+          <p className="text-[#94A3B8] text-xs truncate">{usuario.email}</p>
+        </div>
+        <button
+          type="button"
+          onClick={sair}
+          disabled={saindo}
+          title="Sair"
+          className="text-[#D1D5DB] hover:text-white transition-colors p-2 rounded-md hover:bg-white/5 disabled:opacity-60"
+        >
+          <LogOut size={18} />
+        </button>
+      </div>
     </aside>
   );
 }

@@ -5,6 +5,14 @@ import type {
   ColunaKanban,
   StatusProjeto,
 } from "../src/generated/prisma/enums";
+import { hashPassword } from "better-auth/crypto";
+
+const USUARIO_DEMO = {
+  id: "usuario-demo",
+  nome: "Usuário Demo",
+  email: "demo@exemplo.com",
+  senha: "senha-exemplo",
+};
 
 const PESO_COLUNA: Record<ColunaKanban, number> = {
   to: 0,
@@ -183,6 +191,36 @@ async function main() {
 
   const prisma = new PrismaClient({ adapter: new PrismaPg({ connectionString }) });
 
+  const senhaHash = await hashPassword(USUARIO_DEMO.senha);
+
+  await prisma.user.upsert({
+    where: { email: USUARIO_DEMO.email },
+    update: { name: USUARIO_DEMO.nome },
+    create: {
+      id: USUARIO_DEMO.id,
+      name: USUARIO_DEMO.nome,
+      email: USUARIO_DEMO.email,
+      emailVerified: true,
+    },
+  });
+
+  await prisma.account.upsert({
+    where: { id: `${USUARIO_DEMO.id}-credential` },
+    update: { password: senhaHash },
+    create: {
+      id: `${USUARIO_DEMO.id}-credential`,
+      accountId: USUARIO_DEMO.id,
+      providerId: "credential",
+      userId: USUARIO_DEMO.id,
+      password: senhaHash,
+    },
+  });
+
+  await prisma.projeto.updateMany({
+    where: { userId: null },
+    data: { userId: USUARIO_DEMO.id },
+  });
+
   for (const projeto of projetos) {
     const { prazo, ...dados } = projeto;
     const colunas = tarefas
@@ -193,8 +231,18 @@ async function main() {
 
     await prisma.projeto.upsert({
       where: { id: projeto.id },
-      update: { ...dados, progresso, prazo: prazoEmData },
-      create: { ...dados, progresso, prazo: prazoEmData },
+      update: {
+        ...dados,
+        progresso,
+        prazo: prazoEmData,
+        userId: USUARIO_DEMO.id,
+      },
+      create: {
+        ...dados,
+        progresso,
+        prazo: prazoEmData,
+        userId: USUARIO_DEMO.id,
+      },
     });
   }
 
@@ -208,6 +256,9 @@ async function main() {
 
   const total = await prisma.projeto.count();
   console.log(`Seed concluído: ${total} projetos no banco.`);
+  console.log(
+    `Login demo: ${USUARIO_DEMO.email} / senha "${USUARIO_DEMO.senha}"`,
+  );
 
   await prisma.$disconnect();
 }

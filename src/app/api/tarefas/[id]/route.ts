@@ -6,6 +6,7 @@ import {
 import { validarAtualizacaoTarefa } from "@/lib/validacao-tarefas";
 import { respostaDeErro } from "@/lib/resposta-erro";
 import { revalidarProjetos } from "@/lib/paginas";
+import { exigirUsuarioNaApi } from "@/lib/sessao";
 
 type Contexto = {
   params: Promise<{ id: string }>;
@@ -14,6 +15,12 @@ type Contexto = {
 const NAO_ENCONTRADA = { erro: "Tarefa não encontrada." };
 
 export async function PATCH(request: NextRequest, { params }: Contexto) {
+  const sessao = await exigirUsuarioNaApi();
+
+  if (!sessao.ok) {
+    return sessao.resposta;
+  }
+
   const { id } = await params;
   const corpo = await request.json().catch(() => null);
   const validacao = validarAtualizacaoTarefa(corpo);
@@ -23,7 +30,11 @@ export async function PATCH(request: NextRequest, { params }: Contexto) {
   }
 
   try {
-    const tarefa = await atualizarTarefa(id, validacao.dados);
+    const tarefa = await atualizarTarefa(
+      sessao.usuario.id,
+      id,
+      validacao.dados,
+    );
 
     if (!tarefa) {
       return NextResponse.json(NAO_ENCONTRADA, { status: 404 });
@@ -38,10 +49,16 @@ export async function PATCH(request: NextRequest, { params }: Contexto) {
 }
 
 export async function DELETE(_request: NextRequest, { params }: Contexto) {
+  const sessao = await exigirUsuarioNaApi();
+
+  if (!sessao.ok) {
+    return sessao.resposta;
+  }
+
   const { id } = await params;
 
   try {
-    const removida = await removerTarefa(id);
+    const removida = await removerTarefa(sessao.usuario.id, id);
 
     if (!removida) {
       return NextResponse.json(NAO_ENCONTRADA, { status: 404 });

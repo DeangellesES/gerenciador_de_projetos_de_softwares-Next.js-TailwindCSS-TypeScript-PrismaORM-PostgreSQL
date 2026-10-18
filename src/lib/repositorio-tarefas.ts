@@ -32,6 +32,7 @@ export async function criarTarefa(
 }
 
 export async function atualizarTarefa(
+  usuarioId: string,
   id: string,
   dados: {
     titulo?: string;
@@ -41,7 +42,9 @@ export async function atualizarTarefa(
   },
 ): Promise<Tarefa | null> {
   const prisma = getPrisma();
-  const atual = await prisma.tarefa.findUnique({ where: { id } });
+  const atual = await prisma.tarefa.findFirst({
+    where: { id, projeto: { userId: usuarioId } },
+  });
 
   if (!atual) {
     return null;
@@ -84,8 +87,20 @@ export async function atualizarTarefa(
   return prisma.tarefa.findUnique({ where: { id } });
 }
 
-export async function removerTarefa(id: string): Promise<Tarefa | null> {
-  const tarefa = await getPrisma().tarefa.delete({ where: { id } });
+export async function removerTarefa(
+  usuarioId: string,
+  id: string,
+): Promise<Tarefa | null> {
+  const prisma = getPrisma();
+  const existente = await prisma.tarefa.findFirst({
+    where: { id, projeto: { userId: usuarioId } },
+  });
+
+  if (!existente) {
+    return null;
+  }
+
+  const tarefa = await prisma.tarefa.delete({ where: { id } });
 
   await recalcularProgresso(tarefa.projetoId);
 

@@ -21,12 +21,14 @@ const ordemPorStatus: Record<StatusProjeto, number> = {
 };
 
 export async function listarProjetos(
+  usuarioId: string,
   filtro: FiltroProjetos = {},
 ): Promise<Projeto[]> {
   const { status, busca } = filtro;
 
   const projetos = await getPrisma().projeto.findMany({
     where: {
+      userId: usuarioId,
       status: Array.isArray(status) ? { in: status } : status,
       ...(busca
         ? {
@@ -47,13 +49,21 @@ export async function listarProjetos(
   );
 }
 
-export async function buscarProjetoPorId(id: string): Promise<Projeto | null> {
-  return getPrisma().projeto.findUnique({ where: { id } });
+export async function buscarProjetoPorId(
+  usuarioId: string,
+  id: string,
+): Promise<Projeto | null> {
+  return getPrisma().projeto.findFirst({
+    where: { id, userId: usuarioId },
+  });
 }
 
-export async function contarProjetos(): Promise<Record<StatusProjeto, number>> {
+export async function contarProjetos(
+  usuarioId: string,
+): Promise<Record<StatusProjeto, number>> {
   const grupos = await getPrisma().projeto.groupBy({
     by: ["status"],
+    where: { userId: usuarioId },
     _count: { _all: true },
   });
 
@@ -119,10 +129,14 @@ async function garantirSlugUnico(nome: string): Promise<string> {
   return slug;
 }
 
-export async function criarProjeto(dados: DadosProjeto): Promise<Projeto> {
+export async function criarProjeto(
+  usuarioId: string,
+  dados: DadosProjeto,
+): Promise<Projeto> {
   return getPrisma().projeto.create({
     data: {
       ...dados,
+      userId: usuarioId,
       id: await garantirSlugUnico(dados.nome),
       progresso: dados.status === "concluido" ? 100 : 0,
     },
@@ -130,10 +144,20 @@ export async function criarProjeto(dados: DadosProjeto): Promise<Projeto> {
 }
 
 export async function atualizarProjeto(
+  usuarioId: string,
   id: string,
   dados: Partial<DadosProjeto>,
 ): Promise<Projeto | null> {
   const prisma = getPrisma();
+  const existente = await prisma.projeto.findFirst({
+    where: { id, userId: usuarioId },
+    select: { id: true },
+  });
+
+  if (!existente) {
+    return null;
+  }
+
   const projeto = await prisma.projeto.update({ where: { id }, data: dados });
 
   if (dados.status !== undefined) {
@@ -145,6 +169,19 @@ export async function atualizarProjeto(
   return projeto;
 }
 
-export async function removerProjeto(id: string): Promise<Projeto | null> {
-  return getPrisma().projeto.delete({ where: { id } });
+export async function removerProjeto(
+  usuarioId: string,
+  id: string,
+): Promise<Projeto | null> {
+  const prisma = getPrisma();
+  const existente = await prisma.projeto.findFirst({
+    where: { id, userId: usuarioId },
+    select: { id: true },
+  });
+
+  if (!existente) {
+    return null;
+  }
+
+  return prisma.projeto.delete({ where: { id } });
 }

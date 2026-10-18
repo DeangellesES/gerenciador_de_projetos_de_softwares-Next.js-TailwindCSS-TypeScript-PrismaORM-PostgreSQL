@@ -2,6 +2,7 @@ import Link from "next/link";
 import { CircleCheck, FolderOpenDot, Lightbulb } from "lucide-react";
 import { contarProjetos } from "@/lib/repositorio-projetos";
 import { STATUS_PROJETO, type StatusProjeto } from "@/lib/projetos";
+import { exigirUsuarioNaPagina } from "@/lib/sessao";
 
 const secoes: {
   href: string;
@@ -34,7 +35,8 @@ const secoes: {
 ];
 
 export default async function VisaoGeral() {
-  const contagem = await contarProjetos();
+  const usuario = await exigirUsuarioNaPagina();
+  const contagem = await contarProjetos(usuario.id);
   const total = STATUS_PROJETO.reduce(
     (soma, status) => soma + contagem[status],
     0,

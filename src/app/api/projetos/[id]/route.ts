@@ -7,6 +7,7 @@ import {
 import { validarAtualizacao } from "@/lib/validacao-projetos";
 import { respostaDeErro } from "@/lib/resposta-erro";
 import { revalidarProjetos } from "@/lib/paginas";
+import { exigirUsuarioNaApi } from "@/lib/sessao";
 
 type Contexto = {
   params: Promise<{ id: string }>;
@@ -15,10 +16,16 @@ type Contexto = {
 const NAO_ENCONTRADO = { erro: "Projeto não encontrado." };
 
 export async function GET(_request: NextRequest, { params }: Contexto) {
+  const sessao = await exigirUsuarioNaApi();
+
+  if (!sessao.ok) {
+    return sessao.resposta;
+  }
+
   const { id } = await params;
 
   try {
-    const projeto = await buscarProjetoPorId(id);
+    const projeto = await buscarProjetoPorId(sessao.usuario.id, id);
 
     if (!projeto) {
       return NextResponse.json(NAO_ENCONTRADO, { status: 404 });
@@ -31,6 +38,12 @@ export async function GET(_request: NextRequest, { params }: Contexto) {
 }
 
 export async function PATCH(request: NextRequest, { params }: Contexto) {
+  const sessao = await exigirUsuarioNaApi();
+
+  if (!sessao.ok) {
+    return sessao.resposta;
+  }
+
   const { id } = await params;
   const corpo = await request.json().catch(() => null);
   const validacao = validarAtualizacao(corpo);
@@ -40,7 +53,11 @@ export async function PATCH(request: NextRequest, { params }: Contexto) {
   }
 
   try {
-    const projeto = await atualizarProjeto(id, validacao.dados);
+    const projeto = await atualizarProjeto(
+      sessao.usuario.id,
+      id,
+      validacao.dados,
+    );
 
     if (!projeto) {
       return NextResponse.json(NAO_ENCONTRADO, { status: 404 });
@@ -55,16 +72,21 @@ export async function PATCH(request: NextRequest, { params }: Contexto) {
 }
 
 export async function DELETE(_request: NextRequest, { params }: Contexto) {
+  const sessao = await exigirUsuarioNaApi();
+
+  if (!sessao.ok) {
+    return sessao.resposta;
+  }
+
   const { id } = await params;
 
   try {
-    const existente = await buscarProjetoPorId(id);
+    const removido = await removerProjeto(sessao.usuario.id, id);
 
-    if (!existente) {
+    if (!removido) {
       return NextResponse.json(NAO_ENCONTRADO, { status: 404 });
     }
 
-    const removido = await removerProjeto(id);
     revalidarProjetos(id);
 
     return NextResponse.json(removido);
