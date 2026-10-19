@@ -15,6 +15,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Gerenciador de Projetos",
   description: "Organize e acompanhe seus projetos de desenvolvimento",
+  icons: {
+    icon: "/aba-gerenciador.png",
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
