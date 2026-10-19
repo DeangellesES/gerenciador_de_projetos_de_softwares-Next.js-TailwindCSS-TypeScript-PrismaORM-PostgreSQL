@@ -27,16 +27,17 @@ export default function CartaoProjeto({ projeto }: CartaoProjetoProps) {
   return (
     <article className="bg-[#131B2E] border border-white/10 rounded-xl p-5 flex flex-col gap-4 transition-colors hover:border-white/25">
       <div className="flex items-start justify-between gap-3">
-        <div>
-          <h3 className="text-white font-semibold text-lg">{projeto.nome}</h3>
-          <p className="text-[#94A3B8] text-sm mt-1">{projeto.descricao}</p>
-        </div>
+        <h3 className="text-white font-semibold text-lg min-w-0">
+          {projeto.nome}
+        </h3>
         <span
           className={`text-xs font-medium px-2.5 py-1 rounded-full shrink-0 ${badge}`}
         >
           {ROTULOS_STATUS[projeto.status]}
         </span>
       </div>
+
+      <p className="text-[#94A3B8] text-sm break-words">{projeto.descricao}</p>
 
       <div className="flex flex-wrap gap-2">
         {projeto.stack.map((tecnologia) => (
