@@ -28,8 +28,14 @@ export default function FormularioCadastro() {
 
     const dados = new FormData(evento.currentTarget);
     const nome = String(dados.get("nome") ?? "");
-    const email = String(dados.get("email") ?? "");
+    const email = String(dados.get("email") ?? "").trim();
     const senha = String(dados.get("senha") ?? "");
+
+    if (!email.toLowerCase().endsWith(".com")) {
+      setErro("O e-mail deve terminar com .com");
+      setEnviando(false);
+      return;
+    }
 
     const { error } = await authClient.signUp.email({
       name: nome,
@@ -77,6 +83,8 @@ export default function FormularioCadastro() {
           type="email"
           name="email"
           required
+          pattern=".*\.com"
+          title="O e-mail deve terminar com .com"
           autoComplete="email"
           placeholder="voce@exemplo.com"
           className={CAMPOS}
