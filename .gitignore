@@ -9,6 +9,7 @@
 !.yarn/plugins
 !.yarn/releases
 !.yarn/versions
+.pnpm-store
 
 # testing
 /coverage
@@ -16,6 +17,7 @@
 # next.js
 /.next/
 /out/
+next-env.d.ts
 
 # production
 /build
@@ -23,6 +25,8 @@
 # misc
 .DS_Store
 *.pem
+*.log
+.eslintcache
 
 # debug
 npm-debug.log*
@@ -31,10 +35,14 @@ yarn-error.log*
 .pnpm-debug.log*
 
 # env files (can opt-in for committing if needed)
-.env*
+# NUNCA commite o .env: contém DATABASE_URL e BETTER_AUTH_SECRET
+.env
+.env.*
+.env*.local
 !.env.example
+.env.example
 
-# prisma
+# prisma (client gerado)
 /src/generated
 
 # vercel
@@ -42,4 +50,13 @@ yarn-error.log*
 
 # typescript
 *.tsbuildinfo
-next-env.d.ts
+
+# IDE / editor
+.vscode/
+.idea/
+*.swp
+*.suo
+
+# Windows
+Thumbs.db
+Desktop.ini
