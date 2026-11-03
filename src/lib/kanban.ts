@@ -34,6 +34,11 @@ export type DadosTarefa = {
   coluna: ColunaKanban;
 };
 
+export type TarefaSerializada = Omit<Tarefa, "criadoEm" | "atualizadoEm"> & {
+  criadoEm: Date | string;
+  atualizadoEm: Date | string;
+};
+
 export function ehColunaKanban(valor: unknown): valor is ColunaKanban {
   return (
     typeof valor === "string" &&
@@ -56,13 +61,31 @@ export function calcularProgresso(
   return Math.round(soma / tarefas.length);
 }
 
-export function agruparPorColuna(tarefas: Tarefa[]): Record<ColunaKanban, Tarefa[]> {
-  const grupos: Record<ColunaKanban, Tarefa[]> = { to: [], doing: [], done: [] };
+export function normalizarTarefa(tarefa: TarefaSerializada): Tarefa {
+  return {
+    ...tarefa,
+    criadoEm: new Date(tarefa.criadoEm),
+    atualizadoEm: new Date(tarefa.atualizadoEm),
+  };
+}
+
+export function agruparPorColuna(
+  tarefas: Tarefa[],
+): Record<ColunaKanban, Tarefa[]> {
+  const grupos: Record<ColunaKanban, Tarefa[]> = {
+    to: [],
+    doing: [],
+    done: [],
+  };
 
   for (const coluna of COLUNAS_KANBAN) {
     grupos[coluna] = tarefas
       .filter((tarefa) => tarefa.coluna === coluna)
-      .sort((a, b) => a.ordem - b.ordem || a.criadoEm.getTime() - b.criadoEm.getTime());
+      .sort(
+        (a, b) =>
+          a.ordem - b.ordem ||
+          new Date(a.criadoEm).getTime() - new Date(b.criadoEm).getTime(),
+      );
   }
 
   return grupos;

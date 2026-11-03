@@ -1,36 +1,18 @@
 import {
   ehStatusProjeto,
-  paraData,
   type DadosProjeto,
   type StatusProjeto,
 } from "@/lib/projetos";
-
-type Validacao<T> = { ok: true; valor: T } | { ok: false; erro: string };
-
-export type ResultadoValidacao =
-  | { ok: true; dados: Partial<DadosProjeto> }
-  | { ok: false; erro: string };
+import {
+  ehObjeto,
+  validarDataIso,
+  validarTexto,
+  type Resultado,
+  type Validacao,
+} from "@/lib/validacao";
 
 const LIMITE_NOME = 120;
 const LIMITE_DESCRICAO = 600;
-
-function validarTexto(
-  valor: unknown,
-  rotulo: string,
-  limite: number,
-): Validacao<string> {
-  const texto = typeof valor === "string" ? valor.trim() : "";
-
-  if (!texto) {
-    return { ok: false, erro: `Informe ${rotulo}.` };
-  }
-
-  if (texto.length > limite) {
-    return { ok: false, erro: `O ${rotulo} deve ter no máximo ${limite} caracteres.` };
-  }
-
-  return { ok: true, valor: texto };
-}
 
 function validarStatus(valor: unknown): Validacao<StatusProjeto> {
   if (!ehStatusProjeto(valor)) {
@@ -58,75 +40,81 @@ function validarStack(valor: unknown): Validacao<string[]> {
   };
 }
 
-function validarPrazo(valor: unknown): Validacao<Date | null> {
-  const texto = typeof valor === "string" ? valor.trim() : "";
-
-  if (!texto) {
-    return { ok: true, valor: null };
-  }
-
-  const data = paraData(texto);
-
-  if (!data) {
-    return { ok: false, erro: "Informe um prazo válido no formato AAAA-MM-DD." };
-  }
-
-  return { ok: true, valor: data };
-}
-
-export function validarProjeto(
+function validarCampos(
   corpo: unknown,
-): { ok: true; dados: DadosProjeto } | { ok: false; erro: string } {
-  const resultado = validar(corpo, false);
-
-  return resultado.ok
-    ? { ok: true, dados: resultado.dados as DadosProjeto }
-    : resultado;
-}
-
-export function validarAtualizacao(
-  corpo: unknown,
-): ResultadoValidacao {
-  return validar(corpo, true);
-}
-
-function validar(corpo: unknown, parcial: boolean): ResultadoValidacao {
-  if (typeof corpo !== "object" || corpo === null) {
+  parcial: boolean,
+): Resultado<Partial<DadosProjeto>> {
+  if (!ehObjeto(corpo)) {
     return { ok: false, erro: "Corpo da requisição inválido." };
   }
 
-  const entrada = corpo as Record<string, unknown>;
   const dados: Partial<DadosProjeto> = {};
 
-  if (!parcial || "nome" in entrada) {
-    const resultado = validarTexto(entrada.nome, "nome do projeto", LIMITE_NOME);
+  if (!parcial || "nome" in corpo) {
+    const resultado = validarTexto(corpo.nome, "o nome do projeto", LIMITE_NOME);
     if (!resultado.ok) return resultado;
     dados.nome = resultado.valor;
   }
 
-  if (!parcial || "descricao" in entrada) {
-    const resultado = validarTexto(entrada.descricao, "descrição do projeto", LIMITE_DESCRICAO);
+  if (!parcial || "descricao" in corpo) {
+    const resultado = validarTexto(
+      corpo.descricao,
+      "a descrição do projeto",
+      LIMITE_DESCRICAO,
+    );
     if (!resultado.ok) return resultado;
     dados.descricao = resultado.valor;
   }
 
-  if (!parcial || "status" in entrada) {
-    const resultado = validarStatus(entrada.status);
+  if (!parcial || "status" in corpo) {
+    const resultado = validarStatus(corpo.status);
     if (!resultado.ok) return resultado;
     dados.status = resultado.valor;
   }
 
-  if (!parcial || "stack" in entrada) {
-    const resultado = validarStack(entrada.stack);
+  if (!parcial || "stack" in corpo) {
+    const resultado = validarStack(corpo.stack);
     if (!resultado.ok) return resultado;
     dados.stack = resultado.valor;
   }
 
-  if (!parcial || "prazo" in entrada) {
-    const resultado = validarPrazo(entrada.prazo);
+  if (!parcial || "prazo" in corpo) {
+    const resultado = validarDataIso(corpo.prazo);
     if (!resultado.ok) return resultado;
     dados.prazo = resultado.valor;
   }
 
+  if (parcial && Object.keys(dados).length === 0) {
+    return { ok: false, erro: "Nenhum campo válido para atualizar." };
+  }
+
   return { ok: true, dados };
+}
+
+export function validarProjeto(corpo: unknown): Resultado<DadosProjeto> {
+  const resultado = validarCampos(corpo, false);
+
+  if (!resultado.ok) {
+    return resultado;
+  }
+
+  const { nome, descricao, status, stack, prazo } = resultado.dados;
+
+  if (
+    nome === undefined ||
+    descricao === undefined ||
+    status === undefined ||
+    stack === undefined ||
+    prazo === undefined
+  ) {
+    return { ok: false, erro: "Dados do projeto incompletos." };
+  }
+
+  return { ok: true, dados: { nome, descricao, status, stack, prazo } };
+}
+
+export function validarAtualizacao(
+  corpo: unknown,
+): Resultado<Partial<DadosProjeto>> {
+  return validarCampos(corpo, true);
 }

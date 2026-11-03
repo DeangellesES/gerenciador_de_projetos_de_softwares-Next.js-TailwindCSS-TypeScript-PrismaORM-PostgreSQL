@@ -1,7 +1,11 @@
 import Link from "next/link";
 import { CircleCheck, FolderOpenDot, Lightbulb } from "lucide-react";
 import { contarProjetos } from "@/lib/repositorio-projetos";
-import { STATUS_PROJETO, type StatusProjeto } from "@/lib/projetos";
+import {
+  STATUS_MEUS_PROJETOS,
+  STATUS_PROJETO,
+  type StatusProjeto,
+} from "@/lib/projetos";
 import { exigirUsuarioNaPagina } from "@/lib/sessao";
 
 const secoes: {
@@ -15,7 +19,7 @@ const secoes: {
     href: "/projetos",
     titulo: "Meus Projetos",
     descricao: "Projetos em desenvolvimento, com progresso e prazo atualizados.",
-    status: ["ativo", "iniciando", "finalizando"],
+    status: STATUS_MEUS_PROJETOS,
     Icone: FolderOpenDot,
   },
   {
@@ -28,7 +32,7 @@ const secoes: {
   {
     href: "/ideias-futuras",
     titulo: "Ideias Futuras",
-    descricao: "Ideias guardadas para quando houver tempo e motivation.",
+    descricao: "Ideias guardadas para quando houver tempo e motivação.",
     status: ["ideia"],
     Icone: Lightbulb,
   },

@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
-import LadoDireito from "@/components/Direita";
-import LadoEsquerdo from "@/components/Esquerda";
+import LadoDireito from "@/components/LadoDireito";
+import LadoEsquerdo from "@/components/LadoEsquerdo";
 import { exigirUsuarioNaPagina } from "@/lib/sessao";
 
 export const dynamic = "force-dynamic";

@@ -5,12 +5,10 @@ import type {
   ColunaKanban,
   StatusProjeto,
 } from "../src/generated/prisma/enums";
+import { obterDatabaseUrl } from "../src/lib/database-url";
+import { calcularProgresso } from "../src/lib/kanban";
 
-const PESO_COLUNA: Record<ColunaKanban, number> = {
-  to: 0,
-  doing: 50,
-  done: 100,
-};
+const EMAIL_USUARIO_SEED = "dev@email.com";
 
 const projetos: {
   id: string;
@@ -157,7 +155,7 @@ const tarefas: {
   },
 ];
 
-function calcularProgresso(
+function progressoDoProjeto(
   status: StatusProjeto,
   colunas: ColunaKanban[],
 ): number {
@@ -165,30 +163,36 @@ function calcularProgresso(
     return 100;
   }
 
-  if (status === "ideia" || colunas.length === 0) {
+  if (status === "ideia") {
     return 0;
   }
 
-  const soma = colunas.reduce((total, coluna) => total + PESO_COLUNA[coluna], 0);
-
-  return Math.round(soma / colunas.length);
+  return calcularProgresso(colunas.map((coluna) => ({ coluna })));
 }
 
 async function main() {
-  const connectionString = process.env.DATABASE_URL;
+  const connectionString = obterDatabaseUrl();
 
   if (!connectionString) {
     throw new Error("DATABASE_URL não está definida. Configure o arquivo .env.");
   }
 
   const prisma = new PrismaClient({ adapter: new PrismaPg({ connectionString }) });
+  const email = (
+    process.env.SEED_USER_EMAIL?.trim() || EMAIL_USUARIO_SEED
+  ).toLowerCase();
+
+  const usuario = await prisma.user.findFirst({
+    where: { email: { equals: email, mode: "insensitive" } },
+    select: { id: true },
+  });
 
   for (const projeto of projetos) {
     const { prazo, ...dados } = projeto;
     const colunas = tarefas
       .filter((tarefa) => tarefa.projetoId === projeto.id)
       .map((tarefa) => tarefa.coluna);
-    const progresso = calcularProgresso(projeto.status, colunas);
+    const progresso = progressoDoProjeto(projeto.status, colunas);
     const prazoEmData = prazo ? new Date(`${prazo}T00:00:00.000Z`) : null;
 
     await prisma.projeto.upsert({
@@ -202,8 +206,20 @@ async function main() {
         ...dados,
         progresso,
         prazo: prazoEmData,
+        userId: usuario?.id ?? null,
       },
     });
+  }
+
+  if (usuario) {
+    await prisma.projeto.updateMany({
+      where: { id: { in: projetos.map((projeto) => projeto.id) }, userId: null },
+      data: { userId: usuario.id },
+    });
+  } else {
+    console.warn(
+      `Nenhum usuário encontrado para "${email}". Os projetos de exemplo ficarão sem dono até o seed ser executado com um usuário existente.`,
+    );
   }
 
   for (const tarefa of tarefas) {
@@ -215,7 +231,9 @@ async function main() {
   }
 
   const total = await prisma.projeto.count();
-  console.log(`Seed concluído: ${total} projetos no banco.`);
+  const dono = usuario ? `vinculados a ${email}` : "sem usuário vinculado";
+
+  console.log(`Seed concluído: ${total} projetos no banco (${dono}).`);
 
   await prisma.$disconnect();
 }

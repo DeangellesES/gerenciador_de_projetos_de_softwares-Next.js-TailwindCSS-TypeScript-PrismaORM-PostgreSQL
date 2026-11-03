@@ -3,10 +3,8 @@
 import { useState, type FormEvent } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { BOTAO_PRIMARIO, CAMPOS } from "@/components/ui/estilos";
 import { authClient } from "@/lib/auth-client";
-
-const CAMPOS =
-  "w-full bg-[#080F21] border border-white/10 rounded-md px-3 py-2 text-white placeholder:text-white/40 focus:border-blue-400 focus:outline-none";
 
 function mensagemDeErro(erro: { status?: number; message?: string } | null) {
   if (erro?.status === 422) {
@@ -30,12 +28,6 @@ export default function FormularioCadastro() {
     const nome = String(dados.get("nome") ?? "");
     const email = String(dados.get("email") ?? "").trim();
     const senha = String(dados.get("senha") ?? "");
-
-    if (!email.toLowerCase().endsWith(".com")) {
-      setErro("O e-mail deve terminar com .com");
-      setEnviando(false);
-      return;
-    }
 
     const { error } = await authClient.signUp.email({
       name: nome,
@@ -83,8 +75,6 @@ export default function FormularioCadastro() {
           type="email"
           name="email"
           required
-          pattern=".*\.com"
-          title="O e-mail deve terminar com .com"
           autoComplete="email"
           placeholder="voce@exemplo.com"
           className={CAMPOS}
@@ -106,11 +96,7 @@ export default function FormularioCadastro() {
 
       {erro ? <p className="text-sm text-red-300">{erro}</p> : null}
 
-      <button
-        type="submit"
-        disabled={enviando}
-        className="bg-blue-400 hover:bg-blue-300 disabled:opacity-60 text-white font-medium px-4 py-2 rounded-md transition-colors cursor-pointer"
-      >
+      <button type="submit" disabled={enviando} className={BOTAO_PRIMARIO}>
         {enviando ? "Criando conta..." : "Criar conta"}
       </button>
 

@@ -1,56 +1,42 @@
-import { NextResponse, type NextRequest } from "next/server";
+import { NextResponse } from "next/server";
+import {
+  lerCorpoJson,
+  respostaErro,
+  rotaAutenticada,
+  type ContextoRota,
+} from "@/lib/api";
+import { revalidarProjetos } from "@/lib/paginas";
 import { buscarProjetoPorId } from "@/lib/repositorio-projetos";
 import { criarTarefa, listarTarefas } from "@/lib/repositorio-tarefas";
 import { validarTarefa } from "@/lib/validacao-tarefas";
-import { respostaDeErro } from "@/lib/resposta-erro";
-import { revalidarProjetos } from "@/lib/paginas";
-import { exigirUsuarioNaApi } from "@/lib/sessao";
 
-type Contexto = {
-  params: Promise<{ id: string }>;
-};
+type Contexto = ContextoRota<{ id: string }>;
 
 const PROJETO_NAO_ENCONTRADO = { erro: "Projeto não encontrado." };
 
-export async function GET(_request: NextRequest, { params }: Contexto) {
-  const sessao = await exigirUsuarioNaApi();
-
-  if (!sessao.ok) {
-    return sessao.resposta;
-  }
-
-  const { id } = await params;
-
-  try {
-    const projeto = await buscarProjetoPorId(sessao.usuario.id, id);
+export const GET = rotaAutenticada<Contexto>(
+  async (_request, { usuario, contexto }) => {
+    const { id } = await contexto.params;
+    const projeto = await buscarProjetoPorId(usuario.id, id);
 
     if (!projeto) {
       return NextResponse.json(PROJETO_NAO_ENCONTRADO, { status: 404 });
     }
 
     return NextResponse.json(await listarTarefas(id));
-  } catch (erro) {
-    return respostaDeErro(erro);
-  }
-}
+  },
+);
 
-export async function POST(request: NextRequest, { params }: Contexto) {
-  const sessao = await exigirUsuarioNaApi();
+export const POST = rotaAutenticada<Contexto>(
+  async (request, { usuario, contexto }) => {
+    const { id } = await contexto.params;
+    const validacao = validarTarefa(await lerCorpoJson(request));
 
-  if (!sessao.ok) {
-    return sessao.resposta;
-  }
+    if (!validacao.ok) {
+      return respostaErro(validacao.erro);
+    }
 
-  const { id } = await params;
-  const corpo = await request.json().catch(() => null);
-  const validacao = validarTarefa(corpo);
-
-  if (!validacao.ok) {
-    return NextResponse.json({ erro: validacao.erro }, { status: 400 });
-  }
-
-  try {
-    const projeto = await buscarProjetoPorId(sessao.usuario.id, id);
+    const projeto = await buscarProjetoPorId(usuario.id, id);
 
     if (!projeto) {
       return NextResponse.json(PROJETO_NAO_ENCONTRADO, { status: 404 });
@@ -60,7 +46,5 @@ export async function POST(request: NextRequest, { params }: Contexto) {
     revalidarProjetos(id);
 
     return NextResponse.json(tarefa, { status: 201 });
-  } catch (erro) {
-    return respostaDeErro(erro);
-  }
-}
+  },
+);

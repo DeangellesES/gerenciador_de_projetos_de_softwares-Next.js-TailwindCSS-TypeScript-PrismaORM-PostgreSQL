@@ -22,14 +22,6 @@ export const ROTULOS_STATUS: Record<StatusProjeto, string> = {
   ideia: "Ideia",
 };
 
-export const ROTULOS_STATUS_NOVO_PROJETO: Record<StatusProjeto, string> = {
-  ativo: "Em andamento",
-  iniciando: "Iniciando",
-  finalizando: "Finalizando",
-  concluido: "Concluído",
-  ideia: "Ideia",
-};
-
 export type Projeto = {
   id: string;
   nome: string;
@@ -81,7 +73,7 @@ export function buscarProjetos(lista: Projeto[], termo: string): Projeto[] {
 }
 
 export function formatarData(data: Date | string): string {
-  const valor = paraData(typeof data === "string" ? data : data.toISOString());
+  const valor = typeof data === "string" ? paraData(data) : data;
 
   if (!valor) {
     return "—";

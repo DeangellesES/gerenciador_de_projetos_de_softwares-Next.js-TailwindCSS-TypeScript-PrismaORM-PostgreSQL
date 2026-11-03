@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { NextResponse } from "next/server";
@@ -5,11 +6,11 @@ import { auth, type Sessao } from "@/lib/auth";
 
 export type Usuario = Sessao["user"];
 
-export async function getSessionUsuario(): Promise<Usuario | null> {
+export const getSessionUsuario = cache(async (): Promise<Usuario | null> => {
   const sessao = await auth.api.getSession({ headers: await headers() });
 
   return sessao?.user ?? null;
-}
+});
 
 export async function exigirUsuarioNaPagina(): Promise<Usuario> {
   const usuario = await getSessionUsuario();

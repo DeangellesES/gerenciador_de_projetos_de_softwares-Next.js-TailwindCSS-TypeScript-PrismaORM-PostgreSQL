@@ -1,10 +1,13 @@
 import { getPrisma } from "@/lib/db";
 import { recalcularProgresso } from "@/lib/repositorio-projetos";
-import type {
-  ColunaKanban,
-  DadosTarefa,
-  Tarefa,
-} from "@/lib/kanban";
+import type { ColunaKanban, DadosTarefa, Tarefa } from "@/lib/kanban";
+
+export type DadosAtualizacaoTarefa = {
+  titulo?: string;
+  descricao?: string | null;
+  coluna?: ColunaKanban;
+  ordem?: number;
+};
 
 export async function listarTarefas(projetoId: string): Promise<Tarefa[]> {
   return getPrisma().tarefa.findMany({
@@ -18,12 +21,13 @@ export async function criarTarefa(
   dados: DadosTarefa,
 ): Promise<Tarefa> {
   const prisma = getPrisma();
-  const ordem = await prisma.tarefa.count({
+  const agregado = await prisma.tarefa.aggregate({
     where: { projetoId, coluna: dados.coluna },
+    _max: { ordem: true },
   });
 
   const tarefa = await prisma.tarefa.create({
-    data: { ...dados, projetoId, ordem },
+    data: { ...dados, projetoId, ordem: (agregado._max.ordem ?? -1) + 1 },
   });
 
   await recalcularProgresso(projetoId);
@@ -34,12 +38,7 @@ export async function criarTarefa(
 export async function atualizarTarefa(
   usuarioId: string,
   id: string,
-  dados: {
-    titulo?: string;
-    descricao?: string | null;
-    coluna?: ColunaKanban;
-    ordem?: number;
-  },
+  dados: DadosAtualizacaoTarefa,
 ): Promise<Tarefa | null> {
   const prisma = getPrisma();
   const atual = await prisma.tarefa.findFirst({
@@ -67,24 +66,24 @@ export async function atualizarTarefa(
   const lista = [...outras];
   lista.splice(posicao, 0, atual);
 
-  await prisma.$transaction(
-    lista.map((tarefa, indice) =>
-      prisma.tarefa.update({
+  return prisma.$transaction(async (transacao) => {
+    for (const [indice, tarefa] of lista.entries()) {
+      await transacao.tarefa.update({
         where: { id: tarefa.id },
         data: {
           ordem: indice,
           coluna: destino,
           ...(tarefa.id === id ? texto : {}),
         },
-      }),
-    ),
-  );
+      });
+    }
 
-  if (coluna !== undefined) {
-    await recalcularProgresso(atual.projetoId);
-  }
+    if (coluna !== undefined) {
+      await recalcularProgresso(atual.projetoId, transacao);
+    }
 
-  return prisma.tarefa.findUnique({ where: { id } });
+    return transacao.tarefa.findUnique({ where: { id } });
+  });
 }
 
 export async function removerTarefa(

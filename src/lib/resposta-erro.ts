@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
 
-export function respostaDeErro(erro: unknown) {
+export function respostaDeErro(
+  erro: unknown,
+  mensagem = "Erro interno ao processar a solicitação.",
+) {
   console.error("[api] erro ao executar a requisição:", erro);
 
-  return NextResponse.json(
-    { erro: "Erro interno ao acessar o banco de dados." },
-    { status: 500 },
-  );
+  return NextResponse.json({ erro: mensagem }, { status: 500 });
 }

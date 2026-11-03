@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import BuscaProjetos from "@/components/BuscaProjetos";
 import {
   ROTULOS_STATUS,
@@ -11,15 +11,21 @@ import {
 
 type Categoria = "todos" | StatusProjeto;
 
-function contarPorStatus(projetos: Projeto[], status: StatusProjeto) {
-  return projetos.filter((projeto) => projeto.status === status).length;
-}
-
 type FiltroProjetosProps = {
   projetos: Projeto[];
   mostrarCategorias?: boolean;
   statusDisponiveis?: StatusProjeto[];
 };
+
+function contarPorStatus(projetos: Projeto[]): Map<StatusProjeto, number> {
+  const contagem = new Map<StatusProjeto, number>();
+
+  for (const projeto of projetos) {
+    contagem.set(projeto.status, (contagem.get(projeto.status) ?? 0) + 1);
+  }
+
+  return contagem;
+}
 
 export default function FiltroProjetos({
   projetos,
@@ -28,21 +34,28 @@ export default function FiltroProjetos({
 }: FiltroProjetosProps) {
   const [categoria, setCategoria] = useState<Categoria>("todos");
 
-  const visiveis =
-    categoria === "todos"
-      ? projetos
-      : projetos.filter((projeto) => projeto.status === categoria);
+  const visiveis = useMemo(
+    () =>
+      categoria === "todos"
+        ? projetos
+        : projetos.filter((projeto) => projeto.status === categoria),
+    [projetos, categoria],
+  );
 
-  const categoriasVisiveis: { valor: Categoria; rotulo: string; total: number }[] = [
-    { valor: "todos", rotulo: "Todos", total: projetos.length },
-    ...statusDisponiveis
-      .filter((status) => contarPorStatus(projetos, status) > 0)
-      .map((status) => ({
-        valor: status,
-        rotulo: ROTULOS_STATUS[status],
-        total: contarPorStatus(projetos, status),
-      })),
-  ];
+  const categoriasVisiveis = useMemo(() => {
+    const contagem = contarPorStatus(projetos);
+
+    return [
+      { valor: "todos" as Categoria, rotulo: "Todos", total: projetos.length },
+      ...statusDisponiveis
+        .filter((status) => (contagem.get(status) ?? 0) > 0)
+        .map((status) => ({
+          valor: status as Categoria,
+          rotulo: ROTULOS_STATUS[status],
+          total: contagem.get(status) ?? 0,
+        })),
+    ];
+  }, [projetos, statusDisponiveis]);
 
   return (
     <>

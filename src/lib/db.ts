@@ -1,11 +1,12 @@
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "@/generated/prisma/client";
+import { obterDatabaseUrl } from "@/lib/database-url";
 
 const globalParaPrisma = globalThis as unknown as { prisma?: PrismaClient };
 
 export function getPrisma(): PrismaClient {
   if (!globalParaPrisma.prisma) {
-    const connectionString = process.env.DATABASE_URL;
+    const connectionString = obterDatabaseUrl();
 
     if (!connectionString) {
       throw new Error(

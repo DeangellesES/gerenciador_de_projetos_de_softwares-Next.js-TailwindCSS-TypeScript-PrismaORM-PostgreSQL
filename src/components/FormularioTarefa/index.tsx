@@ -1,24 +1,34 @@
 "use client";
 
-import { useRef, useState, type FormEvent, type ReactNode } from "react";
+import {
+  useRef,
+  useState,
+  type FormEvent,
+  type ReactElement,
+} from "react";
 import { X } from "lucide-react";
+import {
+  BOTAO_CANCELAR,
+  BOTAO_PRIMARIO,
+  CAMPOS,
+} from "@/components/ui/estilos";
+import { enviarJson } from "@/lib/cliente-api";
 import {
   COLUNAS_KANBAN,
   ROTULOS_COLUNA,
+  normalizarTarefa,
   type ColunaKanban,
   type Tarefa,
+  type TarefaSerializada,
 } from "@/lib/kanban";
 
 type FormularioTarefaProps = {
-  children: ReactNode;
+  children: ReactElement;
   projetoId?: string;
   tarefa?: Tarefa;
   colunaPadrao?: ColunaKanban;
   aoConcluir: (tarefa: Tarefa) => void;
 };
-
-const CAMPOS =
-  "w-full bg-[#080F21] border border-white/10 rounded-md px-3 py-2 text-white placeholder:text-white/40 focus:border-blue-400 focus:outline-none";
 
 export default function FormularioTarefa({
   children,
@@ -57,30 +67,24 @@ export default function FormularioTarefa({
       coluna: dados.get("coluna"),
     };
 
-    try {
-      const resposta = await fetch(
-        editando ? `/api/tarefas/${tarefa!.id}` : `/api/projetos/${projetoId}/tarefas`,
-        {
-          method: editando ? "PATCH" : "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(corpo),
-        },
-      );
+    const resultado = await enviarJson<TarefaSerializada>(
+      editando
+        ? `/api/tarefas/${tarefa?.id}`
+        : `/api/projetos/${projetoId}/tarefas`,
+      editando ? "PATCH" : "POST",
+      corpo,
+      "Não foi possível salvar a tarefa.",
+    );
 
-      if (!resposta.ok) {
-        const retorno = await resposta.json().catch(() => null);
-        setErro(retorno?.erro ?? "Não foi possível salvar a tarefa.");
-        return;
-      }
+    setEnviando(false);
 
-      const salva = (await resposta.json()) as Tarefa;
-      fechar();
-      aoConcluir(salva);
-    } catch {
-      setErro("Falha de conexão com o servidor.");
-    } finally {
-      setEnviando(false);
+    if (!resultado.ok) {
+      setErro(resultado.erro);
+      return;
     }
+
+    fechar();
+    aoConcluir(normalizarTarefa(resultado.dados));
   }
 
   return (
@@ -151,18 +155,10 @@ export default function FormularioTarefa({
           {erro ? <p className="text-sm text-red-300">{erro}</p> : null}
 
           <div className="flex justify-end gap-2 pt-2">
-            <button
-              type="button"
-              onClick={fechar}
-              className="text-[#94A3B8] hover:text-white px-4 py-2 rounded-md transition-colors cursor-pointer"
-            >
+            <button type="button" onClick={fechar} className={BOTAO_CANCELAR}>
               Cancelar
             </button>
-            <button
-              type="submit"
-              disabled={enviando}
-              className="bg-blue-400 hover:bg-blue-300 disabled:opacity-60 text-white px-4 py-2 rounded-md transition-colors cursor-pointer"
-            >
+            <button type="submit" disabled={enviando} className={BOTAO_PRIMARIO}>
               {enviando ? "Salvando..." : "Salvar"}
             </button>
           </div>

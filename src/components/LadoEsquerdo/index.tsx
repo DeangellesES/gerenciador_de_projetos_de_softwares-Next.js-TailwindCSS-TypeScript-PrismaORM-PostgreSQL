@@ -28,6 +28,12 @@ type Props = {
   usuario: { nome: string; email: string };
 };
 
+function rotaAtiva(pathname: string, href: string): boolean {
+  return href === "/"
+    ? pathname === "/"
+    : pathname === href || pathname.startsWith(`${href}/`);
+}
+
 export default function LadoEsquerdo({ usuario }: Props) {
   const pathname = usePathname();
   const router = useRouter();
@@ -55,7 +61,7 @@ export default function LadoEsquerdo({ usuario }: Props) {
       </div>
       <nav className="px-6 space-y-5 pt-4">
         {links.map(({ href, rotulo, Icone }) => {
-          const ativo = pathname === href;
+          const ativo = rotaAtiva(pathname, href);
 
           return (
             <Link
@@ -90,6 +96,7 @@ export default function LadoEsquerdo({ usuario }: Props) {
           onClick={sair}
           disabled={saindo}
           title="Sair"
+          aria-label="Sair da conta"
           className="text-[#D1D5DB] hover:text-white transition-colors p-2 rounded-md hover:bg-white/5 disabled:opacity-60"
         >
           <LogOut size={18} />

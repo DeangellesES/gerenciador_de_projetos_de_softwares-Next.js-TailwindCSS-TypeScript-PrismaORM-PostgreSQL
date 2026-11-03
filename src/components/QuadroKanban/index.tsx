@@ -1,12 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import ColunaKanban from "@/components/ColunaKanban";
+import { enviarJson, requisitarApi } from "@/lib/cliente-api";
 import {
   COLUNAS_KANBAN,
+  agruparPorColuna,
   calcularProgresso,
+  normalizarTarefa,
   type ColunaKanban as Coluna,
   type Tarefa,
+  type TarefaSerializada,
 } from "@/lib/kanban";
 
 type QuadroKanbanProps = {
@@ -26,18 +30,7 @@ function aplicarMovimento(
     return lista;
   }
 
-  const grupos: Record<Coluna, Tarefa[]> = { to: [], doing: [], done: [] };
-
-  for (const tarefa of lista) {
-    if (tarefa.id !== id) {
-      grupos[tarefa.coluna].push(tarefa);
-    }
-  }
-
-  for (const chave of COLUNAS_KANBAN) {
-    grupos[chave].sort((a, b) => a.ordem - b.ordem);
-  }
-
+  const grupos = agruparPorColuna(lista.filter((tarefa) => tarefa.id !== id));
   const destino = grupos[coluna];
   const posicao = Math.max(0, Math.min(indice, destino.length));
   destino.splice(posicao, 0, { ...movida, coluna });
@@ -82,18 +75,20 @@ export default function QuadroKanban({
   projetoId,
   tarefasIniciais,
 }: QuadroKanbanProps) {
-  const [tarefas, setTarefas] = useState<Tarefa[]>(tarefasIniciais);
+  const [tarefas, setTarefas] = useState<Tarefa[]>(() =>
+    tarefasIniciais.map(normalizarTarefa),
+  );
   const [arrastandoId, setArrastandoId] = useState<string | null>(null);
 
-  async function recarregar() {
-    try {
-      const resposta = await fetch(`/api/projetos/${projetoId}/tarefas`);
+  const grupos = useMemo(() => agruparPorColuna(tarefas), [tarefas]);
 
-      if (resposta.ok) {
-        setTarefas((await resposta.json()) as Tarefa[]);
-      }
-    } catch {
-      // mantém o estado atual em caso de falha de conexão
+  async function recarregar() {
+    const resultado = await requisitarApi<TarefaSerializada[]>(
+      `/api/projetos/${projetoId}/tarefas`,
+    );
+
+    if (resultado.ok) {
+      setTarefas(resultado.dados.map(normalizarTarefa));
     }
   }
 
@@ -110,39 +105,34 @@ export default function QuadroKanban({
       .filter((tarefa) => tarefa.coluna === coluna)
       .sort((a, b) => a.ordem - b.ordem);
     const indiceOriginal = naColuna.findIndex((tarefa) => tarefa.id === id);
-    const alvo = indiceOriginal !== -1 && indiceOriginal < indice ? indice - 1 : indice;
+    const alvo =
+      indiceOriginal !== -1 && indiceOriginal < indice ? indice - 1 : indice;
 
     setTarefas(aplicarMovimento(tarefas, id, coluna, alvo));
 
-    try {
-      const resposta = await fetch(`/api/tarefas/${id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ coluna, ordem: alvo }),
-      });
+    const resultado = await enviarJson<TarefaSerializada>(
+      `/api/tarefas/${id}`,
+      "PATCH",
+      { coluna, ordem: alvo },
+    );
 
-      if (!resposta.ok) {
-        setTarefas(anterior);
-        return;
-      }
-
-      recarregar();
-    } catch {
+    if (!resultado.ok) {
       setTarefas(anterior);
+      return;
     }
+
+    await recarregar();
   }
 
   async function remover(id: string) {
     const anterior = tarefas;
     setTarefas((lista) => lista.filter((tarefa) => tarefa.id !== id));
 
-    try {
-      const resposta = await fetch(`/api/tarefas/${id}`, { method: "DELETE" });
+    const resultado = await requisitarApi<unknown>(`/api/tarefas/${id}`, {
+      method: "DELETE",
+    });
 
-      if (!resposta.ok) {
-        setTarefas(anterior);
-      }
-    } catch {
+    if (!resultado.ok) {
       setTarefas(anterior);
     }
   }
@@ -151,7 +141,7 @@ export default function QuadroKanban({
     setTarefas((lista) =>
       lista.map((item) => (item.id === tarefa.id ? tarefa : item)),
     );
-    recarregar();
+    void recarregar();
   }
 
   function adicionar(tarefa: Tarefa) {
@@ -168,9 +158,7 @@ export default function QuadroKanban({
             key={coluna}
             coluna={coluna}
             projetoId={projetoId}
-            tarefas={tarefas
-              .filter((tarefa) => tarefa.coluna === coluna)
-              .sort((a, b) => a.ordem - b.ordem)}
+            tarefas={grupos[coluna]}
             arrastandoId={arrastandoId}
             onIniciarArrasto={setArrastandoId}
             onFinalizarArrasto={() => setArrastandoId(null)}

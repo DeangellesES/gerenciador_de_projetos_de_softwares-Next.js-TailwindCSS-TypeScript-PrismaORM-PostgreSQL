@@ -1,11 +1,16 @@
+import { cache } from "react";
 import { getPrisma } from "@/lib/db";
-import { calcularProgresso } from "@/lib/kanban";
+import { calcularProgresso, type ColunaKanban } from "@/lib/kanban";
 import {
+  buscarProjetos,
   gerarSlug,
   type DadosProjeto,
   type Projeto,
   type StatusProjeto,
 } from "@/lib/projetos";
+import type { Prisma, PrismaClient } from "@/generated/prisma/client";
+
+type ClienteBanco = PrismaClient | Prisma.TransactionClient;
 
 export type FiltroProjetos = {
   status?: StatusProjeto | StatusProjeto[];
@@ -20,6 +25,8 @@ const ordemPorStatus: Record<StatusProjeto, number> = {
   ideia: 4,
 };
 
+const LIMITE_TENTATIVAS_ID = 20;
+
 export async function listarProjetos(
   usuarioId: string,
   filtro: FiltroProjetos = {},
@@ -30,33 +37,25 @@ export async function listarProjetos(
     where: {
       userId: usuarioId,
       status: Array.isArray(status) ? { in: status } : status,
-      ...(busca
-        ? {
-            OR: [
-              { nome: { contains: busca, mode: "insensitive" as const } },
-              { descricao: { contains: busca, mode: "insensitive" as const } },
-              { stack: { has: busca } },
-            ],
-          }
-        : {}),
     },
   });
 
-  return projetos.sort(
+  const filtrados = busca ? buscarProjetos(projetos, busca) : projetos;
+
+  return filtrados.sort(
     (a, b) =>
       ordemPorStatus[a.status] - ordemPorStatus[b.status] ||
       a.nome.localeCompare(b.nome, "pt-BR"),
   );
 }
 
-export async function buscarProjetoPorId(
-  usuarioId: string,
-  id: string,
-): Promise<Projeto | null> {
-  return getPrisma().projeto.findFirst({
-    where: { id, userId: usuarioId },
-  });
-}
+export const buscarProjetoPorId = cache(
+  async (usuarioId: string, id: string): Promise<Projeto | null> => {
+    return getPrisma().projeto.findFirst({
+      where: { id, userId: usuarioId },
+    });
+  },
+);
 
 export async function contarProjetos(
   usuarioId: string,
@@ -84,7 +83,7 @@ export async function contarProjetos(
 
 function progressoPorStatus(
   status: StatusProjeto,
-  tarefas: { coluna: "to" | "doing" | "done" }[],
+  tarefas: { coluna: ColunaKanban }[],
 ): number {
   if (status === "concluido") {
     return 100;
@@ -97,50 +96,65 @@ function progressoPorStatus(
   return calcularProgresso(tarefas);
 }
 
-export async function recalcularProgresso(projetoId: string): Promise<void> {
-  const prisma = getPrisma();
-  const projeto = await prisma.projeto.findUnique({
+export async function recalcularProgresso(
+  projetoId: string,
+  cliente: ClienteBanco = getPrisma(),
+): Promise<Projeto | null> {
+  const projeto = await cliente.projeto.findUnique({
     where: { id: projetoId },
     select: { status: true, tarefas: { select: { coluna: true } } },
   });
 
   if (!projeto) {
-    return;
+    return null;
   }
 
-  await prisma.projeto.update({
+  return cliente.projeto.update({
     where: { id: projetoId },
     data: { progresso: progressoPorStatus(projeto.status, projeto.tarefas) },
   });
 }
 
-async function garantirSlugUnico(nome: string): Promise<string> {
-  const raiz = gerarSlug(nome);
-  let slug = raiz;
-  let sufixo = 2;
+function ehConflitoDeId(erro: unknown): boolean {
+  return (
+    typeof erro === "object" &&
+    erro !== null &&
+    "code" in erro &&
+    (erro as { code?: unknown }).code === "P2002"
+  );
+}
 
-  while (
-    await getPrisma().projeto.findUnique({ where: { id: slug }, select: { id: true } })
-  ) {
-    slug = `${raiz}-${sufixo}`;
-    sufixo += 1;
-  }
-
-  return slug;
+function progressoInicial(status: StatusProjeto): number {
+  return status === "concluido" ? 100 : 0;
 }
 
 export async function criarProjeto(
   usuarioId: string,
   dados: DadosProjeto,
 ): Promise<Projeto> {
-  return getPrisma().projeto.create({
-    data: {
-      ...dados,
-      userId: usuarioId,
-      id: await garantirSlugUnico(dados.nome),
-      progresso: dados.status === "concluido" ? 100 : 0,
-    },
-  });
+  const raiz = gerarSlug(dados.nome);
+  const prisma = getPrisma();
+
+  for (let tentativa = 0; tentativa < LIMITE_TENTATIVAS_ID; tentativa += 1) {
+    const id = tentativa === 0 ? raiz : `${raiz}-${tentativa + 1}`;
+
+    try {
+      return await prisma.projeto.create({
+        data: {
+          ...dados,
+          id,
+          userId: usuarioId,
+          progresso: progressoInicial(dados.status),
+        },
+      });
+    } catch (erro) {
+      if (!ehConflitoDeId(erro)) {
+        throw erro;
+      }
+    }
+  }
+
+  throw new Error("Não foi possível gerar um identificador único para o projeto.");
 }
 
 export async function atualizarProjeto(
@@ -158,15 +172,15 @@ export async function atualizarProjeto(
     return null;
   }
 
-  const projeto = await prisma.projeto.update({ where: { id }, data: dados });
-
-  if (dados.status !== undefined) {
-    await recalcularProgresso(id);
-
-    return prisma.projeto.findUnique({ where: { id } });
+  if (dados.status === undefined) {
+    return prisma.projeto.update({ where: { id }, data: dados });
   }
 
-  return projeto;
+  return prisma.$transaction(async (transacao) => {
+    await transacao.projeto.update({ where: { id }, data: dados });
+
+    return recalcularProgresso(id, transacao);
+  });
 }
 
 export async function removerProjeto(

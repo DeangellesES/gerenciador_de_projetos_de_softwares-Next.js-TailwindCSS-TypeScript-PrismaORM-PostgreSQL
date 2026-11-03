@@ -1,10 +1,21 @@
 "use client";
 
-import { useRef, useState, type FormEvent, type ReactNode } from "react";
+import {
+  useRef,
+  useState,
+  type FormEvent,
+  type ReactElement,
+} from "react";
 import { useRouter } from "next/navigation";
 import { X } from "lucide-react";
 import {
-  ROTULOS_STATUS_NOVO_PROJETO,
+  BOTAO_CANCELAR,
+  BOTAO_PRIMARIO,
+  CAMPOS,
+} from "@/components/ui/estilos";
+import { enviarJson } from "@/lib/cliente-api";
+import {
+  ROTULOS_STATUS,
   STATUS_PROJETO,
   paraTextoData,
   type Projeto,
@@ -12,15 +23,12 @@ import {
 } from "@/lib/projetos";
 
 type FormularioProjetoProps = {
-  children: ReactNode;
+  children: ReactElement;
   projeto?: Projeto;
   statusPadrao?: StatusProjeto;
   mostrarStatus?: boolean;
   statusOpcoes?: StatusProjeto[];
 };
-
-const CAMPOS =
-  "w-full bg-[#080F21] border border-white/10 rounded-md px-3 py-2 text-white placeholder:text-white/40 focus:border-blue-400 focus:outline-none";
 
 export default function FormularioProjeto({
   children,
@@ -72,33 +80,25 @@ export default function FormularioProjeto({
       prazo: dados.get("prazo") || null,
     };
 
-    try {
-      const resposta = await fetch(
-        editando ? `/api/projetos/${projeto!.id}` : "/api/projetos",
-        {
-          method: editando ? "PATCH" : "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(corpo),
-        },
-      );
+    const resultado = await enviarJson<Projeto>(
+      editando ? `/api/projetos/${projeto?.id}` : "/api/projetos",
+      editando ? "PATCH" : "POST",
+      corpo,
+      "Não foi possível salvar o projeto.",
+    );
 
-      if (!resposta.ok) {
-        const retorno = await resposta.json().catch(() => null);
-        setErro(retorno?.erro ?? "Não foi possível salvar o projeto.");
-        return;
-      }
+    setEnviando(false);
 
-      const criado = await resposta.json();
-      fechar();
-      router.refresh();
+    if (!resultado.ok) {
+      setErro(resultado.erro);
+      return;
+    }
 
-      if (!editando) {
-        router.push(`/projetos/${criado.id}`);
-      }
-    } catch {
-      setErro("Falha de conexão com o servidor.");
-    } finally {
-      setEnviando(false);
+    fechar();
+    router.refresh();
+
+    if (!editando) {
+      router.push(`/projetos/${resultado.dados.id}`);
     }
   }
 
@@ -178,7 +178,7 @@ export default function FormularioProjeto({
                 >
                   {opcoesStatus.map((status) => (
                     <option key={status} value={status} className="bg-[#131B2E]">
-                      {ROTULOS_STATUS_NOVO_PROJETO[status]}
+                      {ROTULOS_STATUS[status]}
                     </option>
                   ))}
                 </select>
@@ -209,18 +209,10 @@ export default function FormularioProjeto({
           {erro ? <p className="text-sm text-red-300">{erro}</p> : null}
 
           <div className="flex justify-end gap-2 pt-2">
-            <button
-              type="button"
-              onClick={fechar}
-              className="text-[#94A3B8] hover:text-white px-4 py-2 rounded-md transition-colors cursor-pointer"
-            >
+            <button type="button" onClick={fechar} className={BOTAO_CANCELAR}>
               Cancelar
             </button>
-            <button
-              type="submit"
-              disabled={enviando}
-              className="bg-blue-400 hover:bg-blue-300 disabled:opacity-60 text-white px-4 py-2 rounded-md transition-colors cursor-pointer"
-            >
+            <button type="submit" disabled={enviando} className={BOTAO_PRIMARIO}>
               {enviando ? "Salvando..." : "Salvar"}
             </button>
           </div>
