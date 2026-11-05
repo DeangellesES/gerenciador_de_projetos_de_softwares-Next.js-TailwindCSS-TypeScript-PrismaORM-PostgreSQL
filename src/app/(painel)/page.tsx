@@ -17,7 +17,7 @@ const secoes: {
 }[] = [
   {
     href: "/projetos",
-    titulo: "Meus Projetos",
+    titulo: "Projetos em Desenvolvimento",
     descricao: "Projetos em desenvolvimento, com progresso e prazo atualizados.",
     status: STATUS_MEUS_PROJETOS,
     Icone: FolderOpenDot,
@@ -25,7 +25,7 @@ const secoes: {
   {
     href: "/projetos-concluidos",
     titulo: "Projetos Finalizados",
-    descricao: "Trabalhos finalizados e disponíveis no portfólio.",
+    descricao: "Trabalhos finalizados.",
     status: ["concluido"],
     Icone: CircleCheck,
   },
