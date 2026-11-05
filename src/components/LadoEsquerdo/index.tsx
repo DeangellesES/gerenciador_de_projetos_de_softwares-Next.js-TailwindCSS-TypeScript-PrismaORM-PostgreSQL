@@ -15,13 +15,13 @@ import { authClient } from "@/lib/auth-client";
 
 const links = [
   { href: "/", rotulo: "Visão Geral", Icone: LayoutDashboard },
-  { href: "/projetos", rotulo: "Meus Projetos", Icone: FolderOpenDot },
+  { href: "/projetos", rotulo: "Projetos em Desenvolvimento", Icone: FolderOpenDot },
   {
     href: "/projetos-concluidos",
     rotulo: "Projetos Finalizados",
     Icone: CircleCheck,
   },
-  { href: "/ideias-futuras", rotulo: "Ideias Futuras", Icone: Lightbulb },
+  { href: "/ideias-futuras", rotulo: "Projetos Futuros", Icone: Lightbulb },
 ];
 
 type Props = {

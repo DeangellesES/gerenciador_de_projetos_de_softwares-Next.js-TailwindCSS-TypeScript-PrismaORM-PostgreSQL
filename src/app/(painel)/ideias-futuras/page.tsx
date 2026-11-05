@@ -13,9 +13,9 @@ export default async function PaginaIdeiasFuturas() {
 
   return (
     <ListaProjetos
-      titulo="Ideias Futuras"
+      titulo="Projetos Futuros"
       descricao="Ideias guardadas para quando houver tempo e motivation."
-      botao="Nova Ideia"
+      botao="Novo Projeto"
       statusPadrao="ideia"
       mostrarStatus={false}
       projetos={projetos}
