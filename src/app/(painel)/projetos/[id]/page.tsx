@@ -40,7 +40,7 @@ export default async function PaginaProjeto({
           className="text-sm text-[#94A3B8] hover:text-white flex items-center gap-2 transition-colors"
         >
           <ArrowLeft size={16} />
-          Voltar para Meus Projetos
+          Voltar para Projetos em Desenvolvimento
         </Link>
 
         <AcoesProjeto projeto={projeto} />
