@@ -4,7 +4,12 @@ import Link from "next/link";
 import { ArrowLeft, CalendarDays } from "lucide-react";
 import AcoesProjeto from "@/components/AcoesProjeto";
 import { buscarProjetoPorId } from "@/lib/repositorio-projetos";
-import { ROTULOS_STATUS, formatarData } from "@/lib/projetos";
+import {
+  ROTULOS_STATUS,
+  ROTULO_VOLTAR_POR_STATUS,
+  ROTA_POR_STATUS,
+  formatarData,
+} from "@/lib/projetos";
 import { exigirUsuarioNaPagina, getSessionUsuario } from "@/lib/sessao";
 
 export async function generateMetadata({
@@ -36,11 +41,11 @@ export default async function PaginaProjeto({
     <div className="px-10 py-8 flex flex-col gap-6 max-w-3xl">
       <div className="flex items-center justify-between">
         <Link
-          href="/projetos"
+          href={ROTA_POR_STATUS[projeto.status]}
           className="text-sm text-[#94A3B8] hover:text-white flex items-center gap-2 transition-colors"
         >
           <ArrowLeft size={16} />
-          Voltar para Projetos em Desenvolvimento
+          {ROTULO_VOLTAR_POR_STATUS[projeto.status]}
         </Link>
 
         <AcoesProjeto projeto={projeto} />

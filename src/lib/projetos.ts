@@ -22,6 +22,22 @@ export const ROTULOS_STATUS: Record<StatusProjeto, string> = {
   ideia: "Projeto futuro",
 };
 
+export const ROTA_POR_STATUS: Record<StatusProjeto, string> = {
+  ativo: "/projetos",
+  iniciando: "/projetos",
+  finalizando: "/projetos",
+  concluido: "/projetos-concluidos",
+  ideia: "/ideias-futuras",
+};
+
+export const ROTULO_VOLTAR_POR_STATUS: Record<StatusProjeto, string> = {
+  ativo: "Voltar para Projetos em Desenvolvimento",
+  iniciando: "Voltar para Projetos em Desenvolvimento",
+  finalizando: "Voltar para Projetos em Desenvolvimento",
+  concluido: "Voltar para Projetos Finalizados",
+  ideia: "Voltar para Projetos Futuros",
+};
+
 export type Projeto = {
   id: string;
   nome: string;

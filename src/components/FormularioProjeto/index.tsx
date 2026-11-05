@@ -16,19 +16,12 @@ import {
 import { enviarJson } from "@/lib/cliente-api";
 import {
   ROTULOS_STATUS,
+  ROTA_POR_STATUS,
   STATUS_PROJETO,
   paraTextoData,
   type Projeto,
   type StatusProjeto,
 } from "@/lib/projetos";
-
-const ROTA_POR_STATUS: Record<StatusProjeto, string> = {
-  ativo: "/projetos",
-  iniciando: "/projetos",
-  finalizando: "/projetos",
-  concluido: "/projetos-concluidos",
-  ideia: "/ideias-futuras",
-};
 
 type FormularioProjetoProps = {
   children: ReactElement;
