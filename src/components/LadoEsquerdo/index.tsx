@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import {
   CircleCheck,
@@ -36,8 +36,13 @@ function rotaAtiva(pathname: string, href: string): boolean {
 
 export default function LadoEsquerdo({ usuario }: Props) {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const router = useRouter();
   const [saindo, setSaindo] = useState(false);
+
+  const secaoProjeto = pathname.startsWith("/projetos/")
+    ? searchParams.get("secao")
+    : null;
 
   async function sair() {
     setSaindo(true);
@@ -61,7 +66,9 @@ export default function LadoEsquerdo({ usuario }: Props) {
       </div>
       <nav className="px-6 space-y-5 pt-4">
         {links.map(({ href, rotulo, Icone }) => {
-          const ativo = rotaAtiva(pathname, href);
+          const ativo = secaoProjeto
+            ? href === secaoProjeto
+            : rotaAtiva(pathname, href);
 
           return (
             <Link

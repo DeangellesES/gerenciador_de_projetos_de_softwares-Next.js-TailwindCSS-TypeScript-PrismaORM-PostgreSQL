@@ -2,6 +2,7 @@ import Link from "next/link";
 import { CalendarDays, SquareKanban } from "lucide-react";
 import {
   ROTULOS_STATUS,
+  ROTA_POR_STATUS,
   STATUS_MEUS_PROJETOS,
   formatarData,
   type Projeto,
@@ -23,6 +24,11 @@ type CartaoProjetoProps = {
 export default function CartaoProjeto({ projeto }: CartaoProjetoProps) {
   const { barra, badge } = cores[projeto.status];
   const emMeusProjetos = STATUS_MEUS_PROJETOS.includes(projeto.status);
+  const secao = ROTA_POR_STATUS[projeto.status];
+  const hrefDetalhes =
+    secao === "/projetos"
+      ? `/projetos/${projeto.id}`
+      : `/projetos/${projeto.id}?secao=${encodeURIComponent(secao)}`;
 
   return (
     <article className="bg-[#131B2E] border border-white/10 rounded-xl p-5 flex flex-col gap-4 transition-colors hover:border-white/25">
@@ -85,7 +91,7 @@ export default function CartaoProjeto({ projeto }: CartaoProjetoProps) {
             </Link>
           ) : null}
           <Link
-            href={`/projetos/${projeto.id}`}
+            href={hrefDetalhes}
             className="text-sm text-sky-300 hover:text-sky-200 transition-colors"
           >
             Ver detalhes
