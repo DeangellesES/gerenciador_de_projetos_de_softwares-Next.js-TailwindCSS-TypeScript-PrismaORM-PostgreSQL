@@ -64,9 +64,7 @@ export function buscarProjetos(lista: Projeto[], termo: string): Projeto[] {
   const termos = busca.split(/\s+/).filter(Boolean);
 
   return lista.filter((projeto) => {
-    const alvo = normalizar(
-      [projeto.nome, projeto.descricao, ...projeto.stack].join(" "),
-    );
+    const alvo = normalizar(projeto.nome);
 
     return termos.every((termoBusca) => alvo.includes(termoBusca));
   });
