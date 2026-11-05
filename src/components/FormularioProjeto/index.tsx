@@ -22,6 +22,14 @@ import {
   type StatusProjeto,
 } from "@/lib/projetos";
 
+const ROTA_POR_STATUS: Record<StatusProjeto, string> = {
+  ativo: "/projetos",
+  iniciando: "/projetos",
+  finalizando: "/projetos",
+  concluido: "/projetos-concluidos",
+  ideia: "/ideias-futuras",
+};
+
 type FormularioProjetoProps = {
   children: ReactElement;
   projeto?: Projeto;
@@ -98,7 +106,7 @@ export default function FormularioProjeto({
     router.refresh();
 
     if (!editando) {
-      router.push(`/projetos/${resultado.dados.id}`);
+      router.push(ROTA_POR_STATUS[resultado.dados.status]);
     }
   }
 
