@@ -15,6 +15,13 @@ export const auth = betterAuth({
       maxAge: 5 * 60,
     },
   },
+  advanced: {
+    cookies: {
+      session_token: {
+        name: "gerenciador.session_token",
+      },
+    },
+  },
 });
 
 export type Sessao = typeof auth.$Infer.Session;

@@ -28,7 +28,11 @@ export default function FormularioLogin() {
     const email = String(dados.get("email") ?? "");
     const senha = String(dados.get("senha") ?? "");
 
-    const { error } = await authClient.signIn.email({ email, password: senha });
+    const { error } = await authClient.signIn.email({
+      email,
+      password: senha,
+      rememberMe: false,
+    });
 
     if (error) {
       setErro(mensagemDeErro(error));

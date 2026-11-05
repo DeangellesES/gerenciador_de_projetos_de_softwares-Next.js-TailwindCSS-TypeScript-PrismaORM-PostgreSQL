@@ -33,6 +33,7 @@ export default function FormularioCadastro() {
       name: nome,
       email,
       password: senha,
+      fetchOptions: { body: { rememberMe: false } },
     });
 
     if (error) {
