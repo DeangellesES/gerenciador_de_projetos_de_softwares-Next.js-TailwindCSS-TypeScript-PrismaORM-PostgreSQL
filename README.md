@@ -3,6 +3,8 @@
 Aplicação web para organizar projetos de desenvolvimento, acompanhar progresso e
 gerenciar tarefas em um quadro Kanban.
 
+<h3>💻<a href="https://gerenciador-de-projetos-de-software.vercel.app/"> Acessar Site do Projeto Aqui</a></h3>
+
 ## Stack
 
 - [Next.js 16](https://nextjs.org) (App Router) + React 19
