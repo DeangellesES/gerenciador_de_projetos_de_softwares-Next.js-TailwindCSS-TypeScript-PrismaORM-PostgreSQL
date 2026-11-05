@@ -19,7 +19,7 @@ export const ROTULOS_STATUS: Record<StatusProjeto, string> = {
   iniciando: "Iniciando",
   finalizando: "Finalizando",
   concluido: "Concluído",
-  ideia: "Ideia",
+  ideia: "Projeto futuro",
 };
 
 export type Projeto = {

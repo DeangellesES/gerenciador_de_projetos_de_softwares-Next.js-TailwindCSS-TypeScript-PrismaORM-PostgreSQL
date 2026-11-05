@@ -4,7 +4,7 @@ import { listarProjetos } from "@/lib/repositorio-projetos";
 import { exigirUsuarioNaPagina } from "@/lib/sessao";
 
 export const metadata: Metadata = {
-  title: "Ideias Futuras",
+  title: "Projetos Futuros",
 };
 
 export default async function PaginaIdeiasFuturas() {
@@ -14,10 +14,11 @@ export default async function PaginaIdeiasFuturas() {
   return (
     <ListaProjetos
       titulo="Projetos Futuros"
-      descricao="Ideias guardadas para quando houver tempo e motivation."
+      descricao="Projetos guardados para quando houver tempo e motivação."
       botao="Novo Projeto"
       statusPadrao="ideia"
       mostrarStatus={false}
+      statusDisponiveis={["ideia"]}
       projetos={projetos}
     />
   );

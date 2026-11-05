@@ -27,11 +27,13 @@ export default function AcoesProjeto({ projeto }: AcoesProjetoProps) {
   const [removendo, setRemovendo] = useState(false);
   const [concluindo, setConcluindo] = useState(false);
 
-  const statusOpcoes: StatusProjeto[] = STATUS_MEUS_PROJETOS.includes(
-    projeto.status,
-  )
-    ? STATUS_MEUS_PROJETOS
-    : [...STATUS_PROJETO];
+  const projetoFuturo = projeto.status === "ideia";
+
+  const statusOpcoes: StatusProjeto[] = projetoFuturo
+    ? ["ideia"]
+    : STATUS_MEUS_PROJETOS.includes(projeto.status)
+      ? STATUS_MEUS_PROJETOS
+      : [...STATUS_PROJETO];
 
   async function excluir() {
     const confirmado = window.confirm(
@@ -85,7 +87,12 @@ export default function AcoesProjeto({ projeto }: AcoesProjetoProps) {
 
   return (
     <div className="flex items-center gap-2">
-      <FormularioProjeto projeto={projeto} statusOpcoes={statusOpcoes}>
+      <FormularioProjeto
+        projeto={projeto}
+        statusOpcoes={statusOpcoes}
+        mostrarStatus={!projetoFuturo}
+        statusPadrao={projetoFuturo ? "ideia" : undefined}
+      >
         <button type="button" className={BOTAO_DISCRETO}>
           <Pencil size={14} />
           Editar

@@ -31,8 +31,8 @@ const secoes: {
   },
   {
     href: "/ideias-futuras",
-    titulo: "Ideias Futuras",
-    descricao: "Ideias guardadas para quando houver tempo e motivação.",
+    titulo: "Projetos Futuros",
+    descricao: "Projetos guardados para quando houver tempo e motivação.",
     status: ["ideia"],
     Icone: Lightbulb,
   },

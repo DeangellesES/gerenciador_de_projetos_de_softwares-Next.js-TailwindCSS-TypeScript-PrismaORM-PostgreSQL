@@ -165,12 +165,17 @@ export default function FormularioProjeto({
             />
           </label>
 
-          {statusFixo ? (
-            campoPrazo
-          ) : (
-            <div className="grid gap-4 sm:grid-cols-2">
-              <label className="flex flex-col gap-1 text-sm">
-                Status
+          <div className="grid gap-4 sm:grid-cols-2">
+            <label className="flex flex-col gap-1 text-sm">
+              Status
+              {statusFixo ? (
+                <input
+                  value={ROTULOS_STATUS[projeto?.status ?? statusPadrao]}
+                  readOnly
+                  disabled
+                  className={`${CAMPOS} opacity-70 cursor-not-allowed`}
+                />
+              ) : (
                 <select
                   name="status"
                   defaultValue={projeto?.status ?? statusPadrao}
@@ -182,11 +187,11 @@ export default function FormularioProjeto({
                     </option>
                   ))}
                 </select>
-              </label>
+              )}
+            </label>
 
-              {campoPrazo}
-            </div>
-          )}
+            {campoPrazo}
+          </div>
 
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="flex flex-col gap-1 text-sm">
