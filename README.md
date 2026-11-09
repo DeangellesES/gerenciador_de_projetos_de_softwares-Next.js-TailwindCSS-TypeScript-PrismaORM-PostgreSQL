@@ -11,7 +11,7 @@ gerenciar tarefas em um quadro Kanban.
 - TypeScript
 - Tailwind CSS
 - Prisma 7 + PostgreSQL
-- Better Auth (e-mail e senha)
+- Better Auth (e-mail/senha e login com Google)
 
 ## Como rodar
 
@@ -49,7 +49,23 @@ Acesse <http://localhost:3000>.
 | `DATABASE_URL` | String de conexão do PostgreSQL (aceita também `POSTGRES_PRISMA_URL`, `POSTGRES_URL`, `DATABASE_URL_POOLED`). |
 | `BETTER_AUTH_SECRET` | Segredo do Better Auth (`openssl rand -base64 32`). |
 | `BETTER_AUTH_URL` | URL base da aplicação. |
+| `GOOGLE_CLIENT_ID` | Client ID do OAuth do Google (opcional; habilita o login com Google). |
+| `GOOGLE_CLIENT_SECRET` | Client Secret do OAuth do Google (opcional; habilita o login com Google). |
 | `SEED_USER_EMAIL` | E-mail do usuário que receberá os projetos de exemplo no seed. |
+
+### Login com Google
+
+1. Crie um projeto e credenciais OAuth em
+   [Google Cloud Console](https://console.cloud.google.com/apis/credentials).
+2. Em **URIs de redirecionamento autorizados**, cadastre:
+   - Desenvolvimento: `http://localhost:3000/api/auth/callback/google`
+   - Produção: `https://SEU_DOMINIO/api/auth/callback/google`
+3. Preencha `GOOGLE_CLIENT_ID` e `GOOGLE_CLIENT_SECRET` no `.env`.
+4. Reinicie o servidor. O botão **Continuar com o Google** aparecerá no login e
+   no cadastro.
+
+Se as variáveis não forem preenchidas, o botão do Google fica oculto e o login
+por e-mail/senha continua funcionando normalmente.
 
 ## Scripts
 

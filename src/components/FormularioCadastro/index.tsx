@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { BOTAO_PRIMARIO, CAMPOS } from "@/components/ui/estilos";
 import { authClient } from "@/lib/auth-client";
+import BotaoGoogle from "@/components/BotaoGoogle";
 
 function mensagemDeErro(erro: { status?: number; message?: string } | null) {
   if (erro?.status === 422) {
@@ -14,7 +15,11 @@ function mensagemDeErro(erro: { status?: number; message?: string } | null) {
   return erro?.message || "Não foi possível criar a conta. Tente novamente.";
 }
 
-export default function FormularioCadastro() {
+export default function FormularioCadastro({
+  googleHabilitado = false,
+}: {
+  googleHabilitado?: boolean;
+}) {
   const router = useRouter();
   const [enviando, setEnviando] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
@@ -100,6 +105,8 @@ export default function FormularioCadastro() {
       <button type="submit" disabled={enviando} className={BOTAO_PRIMARIO}>
         {enviando ? "Criando conta..." : "Criar conta"}
       </button>
+
+      <BotaoGoogle googleHabilitado={googleHabilitado} />
 
       <p className="text-sm text-[#94A3B8] text-center">
         Já tem uma conta?{" "}
