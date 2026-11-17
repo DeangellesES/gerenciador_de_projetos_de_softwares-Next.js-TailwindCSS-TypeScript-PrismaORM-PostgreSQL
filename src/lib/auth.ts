@@ -2,6 +2,7 @@
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { getPrisma } from "@/lib/db";
+import { enviarEmailCadastro } from "@/lib/email";
 
 const googleClientId = process.env.GOOGLE_CLIENT_ID?.trim();
 const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET?.trim();
@@ -32,6 +33,23 @@ export const auth = betterAuth({
     cookieCache: {
       enabled: true,
       maxAge: 5 * 60,
+    },
+  },
+
+  databaseHooks: {
+    user: {
+      create: {
+        after: async (user) => {
+          try {
+            await enviarEmailCadastro({
+              nome: user.name,
+              email: user.email,
+            });
+          } catch (erro) {
+            console.error("[auth] falha ao enviar e-mail de cadastro:", erro);
+          }
+        },
+      },
     },
   },
 

@@ -51,7 +51,10 @@ Acesse <http://localhost:3000>.
 | `BETTER_AUTH_URL` | URL base da aplicação. |
 | `GOOGLE_CLIENT_ID` | Client ID do OAuth do Google (opcional; habilita o login com Google). |
 | `GOOGLE_CLIENT_SECRET` | Client Secret do OAuth do Google (opcional; habilita o login com Google). |
+| `RESEND_API_KEY` | API key do [Resend](https://resend.com) (opcional; habilita o e-mail de cadastro). |
+| `EMAIL_FROM` | Remetente do e-mail de cadastro, com domínio verificado no Resend. |
 | `SEED_USER_EMAIL` | E-mail do usuário que receberá os projetos de exemplo no seed. |
+| `DEV_API_KEY` | Chave das rotas de desenvolvedor `/api/dev/usuarios` (header `x-dev-key`); se vazia, elas retornam 404. |
 
 ### Login com Google
 
