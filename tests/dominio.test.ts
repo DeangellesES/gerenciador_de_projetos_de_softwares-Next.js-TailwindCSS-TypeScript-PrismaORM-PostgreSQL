@@ -166,3 +166,14 @@ test("validarAtualizacao rejeita detalhes que não sejam textos", () => {
 
   assert.equal(resultado.ok, false);
 });
+
+test("validarAtualizacao aceita mais de 20 detalhes", () => {
+  const resultado = validarAtualizacao({
+    detalhes: Array.from({ length: 25 }, (_, indice) => `Detalhe ${indice + 1}`),
+  });
+
+  assert.equal(resultado.ok, true);
+  if (resultado.ok) {
+    assert.equal(resultado.dados.detalhes?.length, 25);
+  }
+});

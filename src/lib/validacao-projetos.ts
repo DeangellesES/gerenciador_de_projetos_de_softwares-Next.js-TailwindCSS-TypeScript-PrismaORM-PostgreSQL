@@ -13,7 +13,6 @@ import {
 
 const LIMITE_NOME = 120;
 const LIMITE_DESCRICAO = 600;
-const LIMITE_DETALHES = 20;
 const LIMITE_TEXTO_DETALHE = 600;
 
 function validarStatus(valor: unknown): Validacao<StatusProjeto> {
@@ -49,13 +48,6 @@ function validarDetalhes(valor: unknown): Validacao<string[]> {
 
   if (!Array.isArray(valor) || valor.some((item) => typeof item !== "string")) {
     return { ok: false, erro: "Os detalhes devem ser uma lista de textos." };
-  }
-
-  if (valor.length > LIMITE_DETALHES) {
-    return {
-      ok: false,
-      erro: `Limite de ${LIMITE_DETALHES} detalhes por projeto.`,
-    };
   }
 
   const detalhes = valor.map((item) => item.trim()).filter(Boolean);
