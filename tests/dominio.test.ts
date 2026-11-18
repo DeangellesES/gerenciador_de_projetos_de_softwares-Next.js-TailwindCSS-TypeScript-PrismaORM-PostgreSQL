@@ -58,29 +58,33 @@ test("gerarSlug produz identificadores estáveis", () => {
   assert.equal(gerarSlug("!!!"), "projeto");
 });
 
-test("buscarProjetos considera nome, descrição e stack", () => {
+test("buscarProjetos considera apenas o nome do projeto", () => {
   const projetos = [
-    criarProjeto({ id: "a", nome: "API de Tarefas", stack: ["Node.js"] }),
+    criarProjeto({
+      id: "a",
+      nome: "API de Tarefas",
+      descricao: "Serviço REST com Node.js",
+      stack: ["Node.js"],
+    }),
     criarProjeto({
       id: "b",
       nome: "Portfólio",
       descricao: "Site com Next.js",
       status: "concluido",
+      stack: ["React"],
     }),
   ];
 
   assert.deepEqual(
-    buscarProjetos(projetos, "node").map((projeto) => projeto.id),
-    ["a"],
-  );
-  assert.deepEqual(
-    buscarProjetos(projetos, "next").map((projeto) => projeto.id),
-    ["b"],
-  );
-  assert.deepEqual(
     buscarProjetos(projetos, "API tarefas").map((projeto) => projeto.id),
     ["a"],
   );
+  assert.deepEqual(
+    buscarProjetos(projetos, "portfolio").map((projeto) => projeto.id),
+    ["b"],
+  );
+  assert.deepEqual(buscarProjetos(projetos, "node"), []);
+  assert.deepEqual(buscarProjetos(projetos, "next"), []);
   assert.equal(buscarProjetos(projetos, "   ").length, 2);
 });
 
