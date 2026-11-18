@@ -17,6 +17,7 @@ import {
   normalizarTarefa,
   type Tarefa,
 } from "../src/lib/kanban";
+import { validarAtualizacao } from "../src/lib/validacao-projetos";
 
 function criarProjeto(parcial: Partial<Projeto>): Projeto {
   return {
@@ -25,6 +26,7 @@ function criarProjeto(parcial: Partial<Projeto>): Projeto {
     descricao: "Descrição",
     status: "ativo",
     stack: [],
+    detalhes: [],
     progresso: 0,
     prazo: null,
     criadoEm: new Date("2026-01-01T00:00:00.000Z"),
@@ -143,4 +145,24 @@ test("normalizarTarefa converte datas serializadas em Date", () => {
   assert.ok(tarefa.criadoEm instanceof Date);
   assert.ok(tarefa.atualizadoEm instanceof Date);
   assert.equal(tarefa.criadoEm.toISOString(), "2026-01-01T00:00:00.000Z");
+});
+
+test("validarAtualizacao normaliza os detalhes do projeto", () => {
+  const resultado = validarAtualizacao({
+    detalhes: [" Autenticação com JWT ", "", "Banco PostgreSQL"],
+  });
+
+  assert.equal(resultado.ok, true);
+  if (resultado.ok) {
+    assert.deepEqual(resultado.dados.detalhes, [
+      "Autenticação com JWT",
+      "Banco PostgreSQL",
+    ]);
+  }
+});
+
+test("validarAtualizacao rejeita detalhes que não sejam textos", () => {
+  const resultado = validarAtualizacao({ detalhes: [42] });
+
+  assert.equal(resultado.ok, false);
 });

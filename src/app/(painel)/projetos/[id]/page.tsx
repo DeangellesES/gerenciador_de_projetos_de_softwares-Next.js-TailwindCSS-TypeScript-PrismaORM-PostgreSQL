@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, CalendarDays } from "lucide-react";
 import AcoesProjeto from "@/components/AcoesProjeto";
+import MaisDetalhes from "@/components/MaisDetalhes";
 import { buscarProjetoPorId } from "@/lib/repositorio-projetos";
 import {
   ROTULOS_STATUS,
@@ -87,6 +88,8 @@ export default async function PaginaProjeto({
           ))}
         </div>
       </section>
+
+      <MaisDetalhes projeto={projeto} />
 
       {projeto.prazo ? (
         <section className="flex items-center gap-2 text-sm text-[#94A3B8]">

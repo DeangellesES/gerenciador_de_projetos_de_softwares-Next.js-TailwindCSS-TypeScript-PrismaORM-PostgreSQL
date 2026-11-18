@@ -29,6 +29,7 @@ model Projeto {
   descricao    String        @db.VarChar(600)
   status       StatusProjeto @default(ativo)
   stack        String[]
+  detalhes     String[]      @default([])
   progresso    Int?
   prazo        DateTime?     @db.Date
   userId       String?       @map("user_id")

@@ -13,6 +13,8 @@ import {
 
 const LIMITE_NOME = 120;
 const LIMITE_DESCRICAO = 600;
+const LIMITE_DETALHES = 20;
+const LIMITE_TEXTO_DETALHE = 600;
 
 function validarStatus(valor: unknown): Validacao<StatusProjeto> {
   if (!ehStatusProjeto(valor)) {
@@ -38,6 +40,34 @@ function validarStack(valor: unknown): Validacao<string[]> {
     ok: true,
     valor: [...new Set(valor.map((item) => item.trim()).filter(Boolean))],
   };
+}
+
+function validarDetalhes(valor: unknown): Validacao<string[]> {
+  if (valor === null || valor === undefined) {
+    return { ok: true, valor: [] };
+  }
+
+  if (!Array.isArray(valor) || valor.some((item) => typeof item !== "string")) {
+    return { ok: false, erro: "Os detalhes devem ser uma lista de textos." };
+  }
+
+  if (valor.length > LIMITE_DETALHES) {
+    return {
+      ok: false,
+      erro: `Limite de ${LIMITE_DETALHES} detalhes por projeto.`,
+    };
+  }
+
+  const detalhes = valor.map((item) => item.trim()).filter(Boolean);
+
+  if (detalhes.some((item) => item.length > LIMITE_TEXTO_DETALHE)) {
+    return {
+      ok: false,
+      erro: `Limite de ${LIMITE_TEXTO_DETALHE} caracteres por detalhe.`,
+    };
+  }
+
+  return { ok: true, valor: detalhes };
 }
 
 function validarCampos(
@@ -78,6 +108,12 @@ function validarCampos(
     dados.stack = resultado.valor;
   }
 
+  if (!parcial || "detalhes" in corpo) {
+    const resultado = validarDetalhes(corpo.detalhes);
+    if (!resultado.ok) return resultado;
+    dados.detalhes = resultado.valor;
+  }
+
   if (!parcial || "prazo" in corpo) {
     const resultado = validarDataIso(corpo.prazo);
     if (!resultado.ok) return resultado;
@@ -98,19 +134,23 @@ export function validarProjeto(corpo: unknown): Resultado<DadosProjeto> {
     return resultado;
   }
 
-  const { nome, descricao, status, stack, prazo } = resultado.dados;
+  const { nome, descricao, status, stack, detalhes, prazo } = resultado.dados;
 
   if (
     nome === undefined ||
     descricao === undefined ||
     status === undefined ||
     stack === undefined ||
+    detalhes === undefined ||
     prazo === undefined
   ) {
     return { ok: false, erro: "Dados do projeto incompletos." };
   }
 
-  return { ok: true, dados: { nome, descricao, status, stack, prazo } };
+  return {
+    ok: true,
+    dados: { nome, descricao, status, stack, detalhes, prazo },
+  };
 }
 
 export function validarAtualizacao(

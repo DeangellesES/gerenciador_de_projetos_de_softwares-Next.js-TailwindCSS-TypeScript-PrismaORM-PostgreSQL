@@ -1,0 +1,1 @@
+ALTER TABLE "projetos" ADD COLUMN "detalhes" TEXT[] DEFAULT ARRAY[]::TEXT[] NOT NULL;

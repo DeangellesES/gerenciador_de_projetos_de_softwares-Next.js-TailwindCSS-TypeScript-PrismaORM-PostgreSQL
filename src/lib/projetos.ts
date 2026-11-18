@@ -44,6 +44,7 @@ export type Projeto = {
   descricao: string;
   status: StatusProjeto;
   stack: string[];
+  detalhes: string[];
   progresso: number | null;
   prazo: Date | null;
   criadoEm: Date;
@@ -55,6 +56,7 @@ export type DadosProjeto = {
   descricao: string;
   status: StatusProjeto;
   stack: string[];
+  detalhes?: string[];
   prazo: Date | null;
 };
 
@@ -80,7 +82,9 @@ export function buscarProjetos(lista: Projeto[], termo: string): Projeto[] {
   const termos = busca.split(/\s+/).filter(Boolean);
 
   return lista.filter((projeto) => {
-    const alvo = normalizar(projeto.nome);
+    const alvo = normalizar(
+      [projeto.nome, projeto.descricao, ...projeto.stack].join(" "),
+    );
 
     return termos.every((termoBusca) => alvo.includes(termoBusca));
   });
