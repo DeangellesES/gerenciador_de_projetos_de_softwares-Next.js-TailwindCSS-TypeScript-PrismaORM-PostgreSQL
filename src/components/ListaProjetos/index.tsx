@@ -30,7 +30,7 @@ export default function ListaProjetos({
     <div className="px-10 py-8 flex flex-col gap-6">
       <header className="flex flex-col gap-1">
         <div className="flex justify-between">
-          <h1 className="text-white text-2xl font-bold">{titulo}</h1>
+          <h1 className="text-texto text-2xl font-bold">{titulo}</h1>
           <BotaoNovoProjeto
             rotulo={botao}
             statusPadrao={statusPadrao}
@@ -38,7 +38,7 @@ export default function ListaProjetos({
             statusOpcoes={statusDisponiveis}
           />
         </div>
-        <p className="text-[#94A3B8] text-sm">{descricao}</p>
+        <p className="text-texto-secundario text-sm">{descricao}</p>
       </header>
       {children}
 

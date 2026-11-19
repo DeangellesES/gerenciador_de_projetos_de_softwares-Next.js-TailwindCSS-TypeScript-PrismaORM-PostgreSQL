@@ -1,14 +1,132 @@
 @import "tailwindcss";
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-fundo: var(--fundo);
+  --color-painel: var(--painel);
+  --color-superficie: var(--superficie);
+  --color-cartao: var(--cartao);
+  --color-texto: var(--texto);
+  --color-texto-secundario: var(--texto-secundario);
+  --color-texto-terciario: var(--texto-terciario);
+  --color-texto-suave: var(--texto-suave);
+  --color-borda: var(--borda);
+  --color-borda-forte: var(--borda-forte);
+  --color-realce: var(--realce);
+  --color-destaque: var(--destaque);
+  --color-destaque-suave: var(--destaque-suave);
+  --color-destaque-avatar: var(--destaque-avatar);
+  --color-destaque-borda: var(--destaque-borda);
+  --color-primario: var(--primario);
+  --color-primario-hover: var(--primario-hover);
+  --color-sucesso: var(--sucesso);
+  --color-sucesso-forte: var(--sucesso-forte);
+  --color-sucesso-borda: var(--sucesso-borda);
+  --color-sucesso-borda-forte: var(--sucesso-borda-forte);
+  --color-perigo: var(--perigo);
+  --color-perigo-forte: var(--perigo-forte);
+  --color-perigo-borda: var(--perigo-borda);
+  --color-perigo-borda-forte: var(--perigo-borda-forte);
+  --color-barra-progresso: var(--barra-progresso);
+  --color-status-ativo: var(--status-ativo);
+  --color-status-ativo-suave: var(--status-ativo-suave);
+  --color-status-iniciando: var(--status-iniciando);
+  --color-status-iniciando-suave: var(--status-iniciando-suave);
+  --color-status-finalizando: var(--status-finalizando);
+  --color-status-finalizando-suave: var(--status-finalizando-suave);
+  --color-status-concluido: var(--status-concluido);
+  --color-status-concluido-suave: var(--status-concluido-suave);
+  --color-status-ideia: var(--status-ideia);
+  --color-status-ideia-suave: var(--status-ideia-suave);
+  --color-background: var(--fundo);
+  --color-foreground: var(--texto);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
+:root {
+  color-scheme: dark;
+
+  --fundo: #080f21;
+  --painel: #0b1326;
+  --superficie: #131b2e;
+  --cartao: #0b1326;
+  --texto: #ffffff;
+  --texto-secundario: #94a3b8;
+  --texto-terciario: #64748b;
+  --texto-suave: #d1d5db;
+  --borda: rgb(255 255 255 / 0.1);
+  --borda-forte: rgb(255 255 255 / 0.25);
+  --realce: rgb(255 255 255 / 0.05);
+  --destaque: #7dd3fc;
+  --destaque-suave: rgb(125 211 252 / 0.05);
+  --destaque-avatar: rgb(125 211 252 / 0.15);
+  --destaque-borda: rgb(125 211 252 / 0.4);
+  --primario: #60a5fa;
+  --primario-hover: #93c5fd;
+  --sucesso: #6ee7b7;
+  --sucesso-forte: #a7f3d0;
+  --sucesso-borda: rgb(52 211 153 / 0.2);
+  --sucesso-borda-forte: rgb(52 211 153 / 0.4);
+  --perigo: #fca5a5;
+  --perigo-forte: #fecaca;
+  --perigo-borda: rgb(248 113 113 / 0.2);
+  --perigo-borda-forte: rgb(248 113 113 / 0.4);
+  --barra-progresso: #34d399;
+  --status-ativo: #7dd3fc;
+  --status-ativo-suave: rgb(125 211 252 / 0.15);
+  --status-iniciando: #67e8f9;
+  --status-iniciando-suave: rgb(103 232 249 / 0.15);
+  --status-finalizando: #c4b5fd;
+  --status-finalizando-suave: rgb(196 181 253 / 0.15);
+  --status-concluido: #6ee7b7;
+  --status-concluido-suave: rgb(110 231 183 / 0.15);
+  --status-ideia: #fcd34d;
+  --status-ideia-suave: rgb(252 211 77 / 0.15);
+}
+
+html.claro {
+  color-scheme: light;
+
+  --fundo: #f8fafc;
+  --painel: #f1f5f9;
+  --superficie: #ffffff;
+  --cartao: #ffffff;
+  --texto: #0f172a;
+  --texto-secundario: #475569;
+  --texto-terciario: #64748b;
+  --texto-suave: #334155;
+  --borda: rgb(15 23 42 / 0.12);
+  --borda-forte: rgb(15 23 42 / 0.28);
+  --realce: rgb(15 23 42 / 0.04);
+  --destaque: #0369a1;
+  --destaque-suave: rgb(3 105 161 / 0.06);
+  --destaque-avatar: rgb(3 105 161 / 0.1);
+  --destaque-borda: rgb(3 105 161 / 0.35);
+  --primario: #2563eb;
+  --primario-hover: #1d4ed8;
+  --sucesso: #047857;
+  --sucesso-forte: #065f46;
+  --sucesso-borda: rgb(4 120 87 / 0.25);
+  --sucesso-borda-forte: rgb(4 120 87 / 0.45);
+  --perigo: #b91c1c;
+  --perigo-forte: #991b1b;
+  --perigo-borda: rgb(185 28 28 / 0.25);
+  --perigo-borda-forte: rgb(185 28 28 / 0.45);
+  --barra-progresso: #059669;
+  --status-ativo: #0369a1;
+  --status-ativo-suave: rgb(3 105 161 / 0.1);
+  --status-iniciando: #0e7490;
+  --status-iniciando-suave: rgb(14 116 144 / 0.1);
+  --status-finalizando: #6d28d9;
+  --status-finalizando-suave: rgb(109 40 217 / 0.1);
+  --status-concluido: #047857;
+  --status-concluido-suave: rgb(4 120 87 / 0.1);
+  --status-ideia: #b45309;
+  --status-ideia-suave: rgb(180 83 9 / 0.1);
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background: var(--fundo);
+  color: var(--texto);
   font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
 }

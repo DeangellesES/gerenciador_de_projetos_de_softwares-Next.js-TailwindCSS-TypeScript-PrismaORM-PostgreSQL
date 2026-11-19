@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Plus_Jakarta_Sans } from "next/font/google";
+import { TemaProvider } from "@/components/TemaProvider";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -13,9 +14,9 @@ const geistMono = Geist_Mono({
 });
 
 const plusJakarta = Plus_Jakarta_Sans({
-    variable: "--font-plus-jakarta",
-    subsets: ["latin"],
-    weight: ["400", "500", "600", "700", "800"],
+  variable: "--font-plus-jakarta",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
 });
 
 export const metadata: Metadata = {
@@ -30,9 +31,19 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="pt-BR"
-      className={` ${plusJakarta.variable} h-full antialiased`}
+      suppressHydrationWarning
+      className={`${geistSans.variable} ${geistMono.variable} ${plusJakarta.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: "try{var t=localStorage.getItem('tema');if(t==='claro')document.documentElement.classList.add('claro');else document.documentElement.classList.remove('claro')}catch(e){}",
+          }}
+        />
+      </head>
+      <body className="min-h-full flex flex-col">
+        <TemaProvider>{children}</TemaProvider>
+      </body>
     </html>
   );
 }

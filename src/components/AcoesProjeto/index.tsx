@@ -121,7 +121,7 @@ export default function AcoesProjeto({ projeto }: AcoesProjetoProps) {
         {removendo ? "Excluindo..." : "Excluir"}
       </button>
 
-      {erro ? <span className="text-xs text-red-300">{erro}</span> : null}
+      {erro ? <span className="text-xs text-perigo">{erro}</span> : null}
     </div>
   );
 }

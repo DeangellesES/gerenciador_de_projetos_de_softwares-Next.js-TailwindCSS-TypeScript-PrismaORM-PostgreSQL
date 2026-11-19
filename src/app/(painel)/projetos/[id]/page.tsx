@@ -43,7 +43,7 @@ export default async function PaginaProjeto({
       <div className="flex items-center justify-between">
         <Link
           href={ROTA_POR_STATUS[projeto.status]}
-          className="text-sm text-[#94A3B8] hover:text-white flex items-center gap-2 transition-colors"
+          className="text-sm text-texto-secundario hover:text-texto flex items-center gap-2 transition-colors"
         >
           <ArrowLeft size={16} />
           {ROTULO_VOLTAR_POR_STATUS[projeto.status]}
@@ -53,22 +53,22 @@ export default async function PaginaProjeto({
       </div>
 
       <header className="flex flex-col gap-2">
-        <h1 className="text-white text-2xl font-bold">{projeto.nome}</h1>
-        <span className="text-xs text-[#D1D5DB] bg-white/5 border border-white/10 rounded-full px-3 py-1 self-start">
+        <h1 className="text-texto text-2xl font-bold">{projeto.nome}</h1>
+        <span className="text-xs text-texto-suave bg-realce border border-borda rounded-full px-3 py-1 self-start">
           {ROTULOS_STATUS[projeto.status]}
         </span>
-        <p className="text-[#94A3B8] text-sm mt-1">{projeto.descricao}</p>
+        <p className="text-texto-secundario text-sm mt-1">{projeto.descricao}</p>
       </header>
 
       {projeto.status !== "ideia" ? (
         <section className="flex flex-col gap-2">
-          <div className="flex justify-between text-sm text-[#94A3B8]">
+          <div className="flex justify-between text-sm text-texto-secundario">
             <span>Progresso</span>
             <span>{projeto.progresso ?? 0}%</span>
           </div>
-          <div className="h-2 rounded-full bg-white/10 overflow-hidden">
+          <div className="h-2 rounded-full bg-borda overflow-hidden">
             <div
-              className="h-full rounded-full bg-sky-400"
+              className="h-full rounded-full bg-status-ativo"
               style={{ width: `${projeto.progresso ?? 0}%` }}
             />
           </div>
@@ -76,12 +76,12 @@ export default async function PaginaProjeto({
       ) : null}
 
       <section className="flex flex-col gap-3">
-        <h2 className="text-white font-semibold">Tecnologias</h2>
+        <h2 className="text-texto font-semibold">Tecnologias</h2>
         <div className="flex flex-wrap gap-2">
           {projeto.stack.map((tecnologia) => (
             <span
               key={tecnologia}
-              className="text-xs text-[#D1D5DB] bg-white/5 border border-white/10 rounded-md px-2 py-1"
+              className="text-xs text-texto-suave bg-realce border border-borda rounded-md px-2 py-1"
             >
               {tecnologia}
             </span>
@@ -92,7 +92,7 @@ export default async function PaginaProjeto({
       <MaisDetalhes projeto={projeto} />
 
       {projeto.prazo ? (
-        <section className="flex items-center gap-2 text-sm text-[#94A3B8]">
+        <section className="flex items-center gap-2 text-sm text-texto-secundario">
           <CalendarDays size={16} />
           Prazo: {formatarData(projeto.prazo)}
         </section>

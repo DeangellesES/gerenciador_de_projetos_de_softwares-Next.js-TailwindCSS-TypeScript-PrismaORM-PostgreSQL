@@ -39,7 +39,7 @@ export default async function PaginaKanban({
       <div className="flex items-center justify-between">
         <Link
           href="/projetos"
-          className="text-sm text-[#94A3B8] hover:text-white flex items-center gap-2 transition-colors"
+          className="text-sm text-texto-secundario hover:text-texto flex items-center gap-2 transition-colors"
         >
           <ArrowLeft size={16} />
           Voltar para Projetos em Desenvolvimento
@@ -47,20 +47,20 @@ export default async function PaginaKanban({
 
         <Link
           href={`/projetos/${projeto.id}`}
-          className="text-sm text-sky-300 hover:text-sky-200 transition-colors"
+          className="text-sm text-status-ativo hover:text-destaque transition-colors"
         >
           Ver detalhes do projeto
         </Link>
       </div>
 
       <header className="flex flex-col gap-1">
-        <h1 className="text-white text-2xl font-bold flex items-center gap-2">
-          <SquareKanban size={24} className="text-[#7DD3FC]" />
+        <h1 className="text-texto text-2xl font-bold flex items-center gap-2">
+          <SquareKanban size={24} className="text-destaque" />
           Kanban
         </h1>
-        <p className="text-[#94A3B8] text-sm">
+        <p className="text-texto-secundario text-sm">
           Organize o desenvolvimento de{" "}
-          <span className="text-white font-medium">{projeto.nome}</span>: o que
+          <span className="text-texto font-medium">{projeto.nome}</span>: o que
           precisa ser feito, o que está em andamento e o que já foi concluído.
         </p>
       </header>

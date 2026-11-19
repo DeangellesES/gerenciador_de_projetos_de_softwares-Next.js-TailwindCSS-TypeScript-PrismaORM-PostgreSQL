@@ -19,7 +19,7 @@ export default function BuscaProjetos({ projetos }: BuscaProjetosProps) {
     <>
       <div className="relative w-full max-w-sm">
         <Search
-          className="absolute left-3 top-1/2 -translate-y-1/2 text-white/70"
+          className="absolute left-3 top-1/2 -translate-y-1/2 text-texto-secundario"
           size={18}
         />
 
@@ -28,13 +28,13 @@ export default function BuscaProjetos({ projetos }: BuscaProjetosProps) {
           value={termo}
           onChange={(evento) => setTermo(evento.target.value)}
           aria-label="Buscar projetos"
-          className="w-full bg-[#080F21] pl-10 pr-3 placeholder:text-white/70 p-2 rounded text-white"
+          className="w-full bg-fundo pl-10 pr-3 placeholder:text-texto-secundario p-2 rounded text-texto"
           placeholder="Buscar Projetos"
         />
       </div>
 
       {resultados.length === 0 ? (
-        <p className="text-[#64748B] text-sm border border-dashed border-white/10 rounded-xl p-8 text-center">
+        <p className="text-texto-terciario text-sm border border-dashed border-borda rounded-xl p-8 text-center">
           {buscando
             ? "Buscando projetos..."
             : termo.trim()

@@ -75,11 +75,11 @@ export default function BotaoGoogle({
   return (
     <div className="flex flex-col gap-2">
       <div className="flex items-center gap-3">
-        <span className="h-px flex-1 bg-white/10" />
-        <span className="text-xs uppercase tracking-wide text-[#94A3B8]">
+        <span className="h-px flex-1 bg-borda" />
+        <span className="text-xs uppercase tracking-wide text-texto-secundario">
           ou
         </span>
-        <span className="h-px flex-1 bg-white/10" />
+        <span className="h-px flex-1 bg-borda" />
       </div>
 
       <button
@@ -92,7 +92,7 @@ export default function BotaoGoogle({
         {enviando ? "Conectando..." : "Continuar com o Google"}
       </button>
 
-      {erro ? <p className="text-sm text-red-300">{erro}</p> : null}
+      {erro ? <p className="text-sm text-perigo">{erro}</p> : null}
     </div>
   );
 }

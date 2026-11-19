@@ -110,10 +110,10 @@ export default function MaisDetalhes({ projeto }: MaisDetalhesProps) {
 
   return (
     <section className="flex flex-col gap-3">
-      <h2 className="text-white font-semibold">Mais detalhes</h2>
+      <h2 className="text-texto font-semibold">Mais detalhes</h2>
 
       {detalhes.length === 0 && editandoIndice === null ? (
-        <p className="text-sm text-[#64748B]">
+        <p className="text-sm text-texto-terciario">
           Nenhum detalhe adicionado ainda.
         </p>
       ) : (
@@ -124,7 +124,7 @@ export default function MaisDetalhes({ projeto }: MaisDetalhesProps) {
             return (
               <div
                 key={indice}
-                className="bg-white/5 border border-white/10 rounded-lg p-3"
+                className="bg-realce border border-borda rounded-lg p-3"
               >
                 {editando ? (
                   <div className="flex items-start gap-3 flex-wrap">
@@ -157,7 +157,7 @@ export default function MaisDetalhes({ projeto }: MaisDetalhesProps) {
                   </div>
                 ) : (
                   <div className="flex items-start justify-between gap-3">
-                    <p className="text-sm text-[#D1D5DB] whitespace-pre-wrap break-words flex-1 min-w-0">
+                    <p className="text-sm text-texto-suave whitespace-pre-wrap break-words flex-1 min-w-0">
                       {detalhe}
                     </p>
                     <div className="flex items-center gap-2 shrink-0">
@@ -165,7 +165,7 @@ export default function MaisDetalhes({ projeto }: MaisDetalhesProps) {
                         type="button"
                         onClick={() => editar(indice)}
                         disabled={salvando}
-                        className="text-xs text-[#94A3B8] hover:text-white flex items-center gap-1 transition-colors cursor-pointer disabled:opacity-60"
+                        className="text-xs text-texto-secundario hover:text-texto flex items-center gap-1 transition-colors cursor-pointer disabled:opacity-60"
                       >
                         <Pencil size={13} />
                         Editar
@@ -174,7 +174,7 @@ export default function MaisDetalhes({ projeto }: MaisDetalhesProps) {
                         type="button"
                         onClick={() => excluir(indice)}
                         disabled={salvando}
-                        className="text-xs text-red-300 hover:text-red-200 flex items-center gap-1 transition-colors cursor-pointer disabled:opacity-60"
+                        className="text-xs text-perigo hover:text-perigo-forte flex items-center gap-1 transition-colors cursor-pointer disabled:opacity-60"
                       >
                         <Trash2 size={13} />
                         Excluir
@@ -188,7 +188,7 @@ export default function MaisDetalhes({ projeto }: MaisDetalhesProps) {
         </div>
       )}
 
-      {erro ? <p className="text-sm text-red-300">{erro}</p> : null}
+      {erro ? <p className="text-sm text-perigo">{erro}</p> : null}
 
       <div className="flex flex-wrap items-center gap-2">
         <button

@@ -124,7 +124,7 @@ export default function FormularioProjeto({
       <dialog
         ref={dialogo}
         onClose={() => setErro(null)}
-        className="bg-[#131B2E] border border-white/10 text-white rounded-xl p-0 w-full max-w-lg backdrop:bg-black/70 m-auto"
+        className="bg-superficie border border-borda text-texto rounded-xl p-0 w-full max-w-lg backdrop:bg-black/70 m-auto"
       >
         <form ref={formulario} onSubmit={enviar} className="p-6 flex flex-col gap-4">
           <div className="flex items-center justify-between">
@@ -135,7 +135,7 @@ export default function FormularioProjeto({
               type="button"
               onClick={fechar}
               aria-label="Fechar"
-              className="text-[#94A3B8] hover:text-white transition-colors cursor-pointer"
+              className="text-texto-secundario hover:text-texto transition-colors cursor-pointer"
             >
               <X size={18} />
             </button>
@@ -183,7 +183,7 @@ export default function FormularioProjeto({
                   className={CAMPOS}
                 >
                   {opcoesStatus.map((status) => (
-                    <option key={status} value={status} className="bg-[#131B2E]">
+                    <option key={status} value={status} className="bg-superficie">
                       {ROTULOS_STATUS[status]}
                     </option>
                   ))}
@@ -206,13 +206,13 @@ export default function FormularioProjeto({
             </label>
           </div>
 
-          <p className="text-xs text-[#94A3B8] border border-white/10 bg-white/5 rounded-md px-3 py-2">
+          <p className="text-xs text-texto-secundario border border-borda bg-realce rounded-md px-3 py-2">
             O progresso é calculado automaticamente pelo quadro Kanban: cada
             tarefa em To Do vale 0%, em Doing 50% e em Done 100%. Ao concluir o
             projeto, ele vai para 100%.
           </p>
 
-          {erro ? <p className="text-sm text-red-300">{erro}</p> : null}
+          {erro ? <p className="text-sm text-perigo">{erro}</p> : null}
 
           <div className="flex justify-end gap-2 pt-2">
             <button type="button" onClick={fechar} className={BOTAO_CANCELAR}>

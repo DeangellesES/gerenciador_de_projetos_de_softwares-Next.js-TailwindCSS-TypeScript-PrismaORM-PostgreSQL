@@ -63,7 +63,7 @@ export default function FiltroProjetos({
         <div
           role="tablist"
           aria-label="Filtrar projetos por categoria"
-          className="flex gap-2 bg-[#080F21] w-fit p-2 rounded-lg"
+          className="flex gap-2 bg-fundo w-fit p-2 rounded-lg"
         >
           {categoriasVisiveis.map(({ valor, rotulo, total }) => {
             const selecionado = valor === categoria;
@@ -77,13 +77,13 @@ export default function FiltroProjetos({
                 onClick={() => setCategoria(valor)}
                 className={`text-sm px-3 py-1.5 rounded-md transition-colors cursor-pointer ${
                   selecionado
-                    ? "bg-[#131B2E] text-white font-medium"
-                    : "text-[#94A3B8] hover:text-white hover:bg-white/5"
+                    ? "bg-superficie text-texto font-medium"
+                    : "text-texto-secundario hover:text-texto hover:bg-realce"
                 }`}
               >
                 {rotulo}{" "}
                 <span
-                  className={selecionado ? "text-white/80" : "text-[#64748B]"}
+                  className={selecionado ? "text-texto-suave" : "text-texto-terciario"}
                 >
                   {total}
                 </span>

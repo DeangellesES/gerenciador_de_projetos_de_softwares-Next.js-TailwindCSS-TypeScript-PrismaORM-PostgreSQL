@@ -10,11 +10,26 @@ import {
 } from "@/lib/projetos";
 
 const cores: Record<StatusProjeto, { barra: string; badge: string }> = {
-  ativo: { barra: "bg-sky-400", badge: "bg-sky-400/15 text-sky-300" },
-  iniciando: { barra: "bg-cyan-400", badge: "bg-cyan-400/15 text-cyan-300" },
-  finalizando: { barra: "bg-violet-400", badge: "bg-violet-400/15 text-violet-300" },
-  concluido: { barra: "bg-emerald-400", badge: "bg-emerald-400/15 text-emerald-300" },
-  ideia: { barra: "bg-amber-400", badge: "bg-amber-400/15 text-amber-300" },
+  ativo: {
+    barra: "bg-status-ativo",
+    badge: "bg-status-ativo-suave text-status-ativo",
+  },
+  iniciando: {
+    barra: "bg-status-iniciando",
+    badge: "bg-status-iniciando-suave text-status-iniciando",
+  },
+  finalizando: {
+    barra: "bg-status-finalizando",
+    badge: "bg-status-finalizando-suave text-status-finalizando",
+  },
+  concluido: {
+    barra: "bg-status-concluido",
+    badge: "bg-status-concluido-suave text-status-concluido",
+  },
+  ideia: {
+    barra: "bg-status-ideia",
+    badge: "bg-status-ideia-suave text-status-ideia",
+  },
 };
 
 type CartaoProjetoProps = {
@@ -31,9 +46,9 @@ export default function CartaoProjeto({ projeto }: CartaoProjetoProps) {
       : `/projetos/${projeto.id}?secao=${encodeURIComponent(secao)}`;
 
   return (
-    <article className="bg-[#131B2E] border border-white/10 rounded-xl p-5 flex flex-col gap-4 transition-colors hover:border-white/25">
+    <article className="bg-superficie border border-borda rounded-xl p-5 flex flex-col gap-4 transition-colors hover:border-borda-forte">
       <div className="flex items-start justify-between gap-3">
-        <h3 className="text-white font-semibold text-lg min-w-0">
+        <h3 className="text-texto font-semibold text-lg min-w-0">
           {projeto.nome}
         </h3>
         <span
@@ -43,13 +58,13 @@ export default function CartaoProjeto({ projeto }: CartaoProjetoProps) {
         </span>
       </div>
 
-      <p className="text-[#94A3B8] text-sm break-words">{projeto.descricao}</p>
+      <p className="text-texto-secundario text-sm break-words">{projeto.descricao}</p>
 
       <div className="flex flex-wrap gap-2">
         {projeto.stack.map((tecnologia) => (
           <span
             key={tecnologia}
-            className="text-xs text-[#D1D5DB] bg-white/5 border border-white/10 rounded-md px-2 py-1"
+            className="text-xs text-texto-suave bg-realce border border-borda rounded-md px-2 py-1"
           >
             {tecnologia}
           </span>
@@ -58,11 +73,11 @@ export default function CartaoProjeto({ projeto }: CartaoProjetoProps) {
 
       {projeto.status !== "ideia" ? (
         <div className="flex flex-col gap-2">
-          <div className="flex justify-between text-xs text-[#94A3B8]">
+          <div className="flex justify-between text-xs text-texto-secundario">
             <span>Progresso</span>
             <span>{projeto.progresso ?? 0}%</span>
           </div>
-          <div className="h-1.5 rounded-full bg-white/10 overflow-hidden">
+          <div className="h-1.5 rounded-full bg-borda overflow-hidden">
             <div
               className={`h-full rounded-full ${barra}`}
               style={{ width: `${projeto.progresso ?? 0}%` }}
@@ -71,20 +86,20 @@ export default function CartaoProjeto({ projeto }: CartaoProjetoProps) {
         </div>
       ) : null}
 
-      <div className="flex items-center justify-between gap-3 pt-1 border-t border-white/10">
+      <div className="flex items-center justify-between gap-3 pt-1 border-t border-borda">
         {projeto.prazo ? (
-          <span className="flex items-center gap-1.5 text-xs text-[#94A3B8]">
+          <span className="flex items-center gap-1.5 text-xs text-texto-secundario">
             <CalendarDays size={14} />
             {formatarData(projeto.prazo)}
           </span>
         ) : (
-          <span className="text-xs text-[#64748B]">Sem prazo definido</span>
+          <span className="text-xs text-texto-terciario">Sem prazo definido</span>
         )}
         <div className="flex items-center gap-2">
           {emMeusProjetos ? (
             <Link
               href={`/projetos/${projeto.id}/kanban`}
-              className="text-sm text-[#D1D5DB] bg-white/5 border border-white/10 hover:border-white/25 hover:text-white px-3 py-1.5 rounded-md flex items-center gap-1.5 transition-colors"
+              className="text-sm text-texto-suave bg-realce border border-borda hover:border-borda-forte hover:text-texto px-3 py-1.5 rounded-md flex items-center gap-1.5 transition-colors"
             >
               <SquareKanban size={14} />
               Kanban
@@ -92,7 +107,7 @@ export default function CartaoProjeto({ projeto }: CartaoProjetoProps) {
           ) : null}
           <Link
             href={hrefDetalhes}
-            className="text-sm text-sky-300 hover:text-sky-200 transition-colors"
+            className="text-sm text-status-ativo hover:text-destaque transition-colors"
           >
             Ver detalhes
           </Link>

@@ -96,7 +96,7 @@ export default function FormularioTarefa({
       <dialog
         ref={dialogo}
         onClose={() => setErro(null)}
-        className="bg-[#131B2E] border border-white/10 text-white rounded-xl p-0 w-full max-w-lg backdrop:bg-black/70 m-auto"
+        className="bg-superficie border border-borda text-texto rounded-xl p-0 w-full max-w-lg backdrop:bg-black/70 m-auto"
       >
         <form ref={formulario} onSubmit={enviar} className="p-6 flex flex-col gap-4">
           <div className="flex items-center justify-between">
@@ -107,7 +107,7 @@ export default function FormularioTarefa({
               type="button"
               onClick={fechar}
               aria-label="Fechar"
-              className="text-[#94A3B8] hover:text-white transition-colors cursor-pointer"
+              className="text-texto-secundario hover:text-texto transition-colors cursor-pointer"
             >
               <X size={18} />
             </button>
@@ -145,14 +145,14 @@ export default function FormularioTarefa({
               className={CAMPOS}
             >
               {COLUNAS_KANBAN.map((coluna) => (
-                <option key={coluna} value={coluna} className="bg-[#131B2E]">
+                <option key={coluna} value={coluna} className="bg-superficie">
                   {ROTULOS_COLUNA[coluna].titulo}
                 </option>
               ))}
             </select>
           </label>
 
-          {erro ? <p className="text-sm text-red-300">{erro}</p> : null}
+          {erro ? <p className="text-sm text-perigo">{erro}</p> : null}
 
           <div className="flex justify-end gap-2 pt-2">
             <button type="button" onClick={fechar} className={BOTAO_CANCELAR}>

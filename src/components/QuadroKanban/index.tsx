@@ -51,20 +51,20 @@ function ProgressoKanban({ tarefas }: { tarefas: Tarefa[] }) {
   const concluidas = tarefas.filter((tarefa) => tarefa.coluna === "done").length;
 
   return (
-    <div className="bg-[#131B2E] border border-white/10 rounded-xl px-5 py-4 flex flex-col gap-3">
+    <div className="bg-superficie border border-borda rounded-xl px-5 py-4 flex flex-col gap-3">
       <div className="flex items-center justify-between text-sm">
-        <span className="text-white font-medium">Progresso do projeto</span>
-        <span className="text-[#94A3B8]">
+        <span className="text-texto font-medium">Progresso do projeto</span>
+        <span className="text-texto-secundario">
           {concluidas}/{tarefas.length} tarefas concluídas · {progresso}%
         </span>
       </div>
-      <div className="h-2 rounded-full bg-white/10 overflow-hidden">
+      <div className="h-2 rounded-full bg-borda overflow-hidden">
         <div
-          className="h-full rounded-full bg-emerald-400 transition-all"
+          className="h-full rounded-full bg-barra-progresso transition-all"
           style={{ width: `${progresso}%` }}
         />
       </div>
-      <p className="text-xs text-[#64748B]">
+      <p className="text-xs text-texto-terciario">
         Cada tarefa em To Do vale 0%, em Doing 50% e em Done 100%.
       </p>
     </div>

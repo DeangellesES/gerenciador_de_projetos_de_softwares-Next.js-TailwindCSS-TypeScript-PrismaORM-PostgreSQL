@@ -77,16 +77,16 @@ export default function ColunaKanban({
   }
 
   return (
-    <section className="bg-[#131B2E] border border-white/10 rounded-xl flex flex-col min-h-[24rem] mb-10">
-      <header className="flex items-start justify-between gap-2 p-4 border-b border-white/10">
+    <section className="bg-superficie border border-borda rounded-xl flex flex-col min-h-[24rem] mb-10">
+      <header className="flex items-start justify-between gap-2 p-4 border-b border-borda">
         <div>
-          <h2 className="text-white font-semibold flex items-center gap-2">
+          <h2 className="text-texto font-semibold flex items-center gap-2">
             {titulo}
-            <span className="text-xs font-medium text-[#94A3B8] bg-white/5 border border-white/10 rounded-full px-2 py-0.5">
+            <span className="text-xs font-medium text-texto-secundario bg-realce border border-borda rounded-full px-2 py-0.5">
               {tarefas.length}
             </span>
           </h2>
-          <p className="text-[#64748B] text-xs mt-0.5">{descricao}</p>
+          <p className="text-texto-terciario text-xs mt-0.5">{descricao}</p>
         </div>
 
         <FormularioTarefa
@@ -97,7 +97,7 @@ export default function ColunaKanban({
           <button
             type="button"
             aria-label={`Adicionar tarefa em ${titulo}`}
-            className="text-[#94A3B8] hover:text-white border border-white/10 hover:border-white/25 rounded-md p-1.5 transition-colors cursor-pointer"
+            className="text-texto-secundario hover:text-texto border border-borda hover:border-borda-forte rounded-md p-1.5 transition-colors cursor-pointer"
           >
             <Plus size={16} />
           </button>
@@ -113,11 +113,11 @@ export default function ColunaKanban({
         onDragLeave={sair}
         onDrop={soltar}
         className={`flex-1 flex flex-col gap-2 p-3 rounded-b-xl transition-colors ${
-          sobre ? "bg-[#7DD3FC]/5 ring-1 ring-inset ring-[#7DD3FC]/40" : ""
+          sobre ? "bg-destaque-suave ring-1 ring-inset ring-destaque-borda" : ""
         }`}
       >
         {tarefas.length === 0 ? (
-          <p className="text-[#64748B] text-xs border border-dashed border-white/10 rounded-lg p-4 text-center m-auto">
+          <p className="text-texto-terciario text-xs border border-dashed border-borda rounded-lg p-4 text-center m-auto">
             Arraste tarefas para cá
           </p>
         ) : (

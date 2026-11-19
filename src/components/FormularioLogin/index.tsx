@@ -52,16 +52,16 @@ export default function FormularioLogin({
   return (
     <form
       onSubmit={enviar}
-      className="bg-[#131B2E] border border-white/10 rounded-xl p-6 w-full max-w-sm flex flex-col gap-4"
+      className="bg-superficie border border-borda rounded-xl p-6 w-full max-w-sm flex flex-col gap-4"
     >
       <header className="flex flex-col gap-1">
-        <h1 className="text-white text-xl font-bold">Entrar</h1>
-        <p className="text-[#94A3B8] text-sm">
+        <h1 className="text-texto text-xl font-bold">Entrar</h1>
+        <p className="text-texto-secundario text-sm">
           Acesse sua conta para ver seus projetos.
         </p>
       </header>
 
-      <label className="flex flex-col gap-1 text-sm text-white">
+      <label className="flex flex-col gap-1 text-sm text-texto">
         E-mail
         <input
           type="email"
@@ -73,7 +73,7 @@ export default function FormularioLogin({
         />
       </label>
 
-      <label className="flex flex-col gap-1 text-sm text-white">
+      <label className="flex flex-col gap-1 text-sm text-texto">
         Senha
         <input
           type="password"
@@ -85,7 +85,7 @@ export default function FormularioLogin({
         />
       </label>
 
-      {erro ? <p className="text-sm text-red-300">{erro}</p> : null}
+      {erro ? <p className="text-sm text-perigo">{erro}</p> : null}
 
       <button type="submit" disabled={enviando} className={BOTAO_PRIMARIO}>
         {enviando ? "Entrando..." : "Entrar"}
@@ -93,9 +93,9 @@ export default function FormularioLogin({
 
       <BotaoGoogle googleHabilitado={googleHabilitado} />
 
-      <p className="text-sm text-[#94A3B8] text-center">
+      <p className="text-sm text-texto-secundario text-center">
         Não tem uma conta?{" "}
-        <Link href="/cadastro" className="text-[#7DD3FC] hover:underline">
+        <Link href="/cadastro" className="text-destaque hover:underline">
           Criar conta
         </Link>
       </p>

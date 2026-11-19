@@ -37,18 +37,18 @@ export default function CartaoTarefa({
       draggable
       onDragStart={() => onIniciarArrasto(tarefa.id)}
       onDragEnd={onFinalizarArrasto}
-      className={`group bg-[#0B1326] border border-white/10 rounded-lg p-3 flex flex-col gap-2 cursor-grab active:cursor-grabbing transition-colors hover:border-white/25 ${
+      className={`group bg-cartao border border-borda rounded-lg p-3 flex flex-col gap-2 cursor-grab active:cursor-grabbing transition-colors hover:border-borda-forte ${
         arrastando ? "opacity-40" : ""
       }`}
     >
       <div className="flex items-start justify-between gap-2">
-        <h3 className="text-white text-sm font-medium break-words">{tarefa.titulo}</h3>
+        <h3 className="text-texto text-sm font-medium break-words">{tarefa.titulo}</h3>
         <div className="flex items-center gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
           <FormularioTarefa tarefa={tarefa} aoConcluir={aoConcluirEdicao}>
             <button
               type="button"
               aria-label={`Editar ${tarefa.titulo}`}
-              className="text-[#94A3B8] hover:text-white p-1 transition-colors cursor-pointer"
+              className="text-texto-secundario hover:text-texto p-1 transition-colors cursor-pointer"
             >
               <Pencil size={14} />
             </button>
@@ -57,7 +57,7 @@ export default function CartaoTarefa({
             type="button"
             onClick={remover}
             aria-label={`Excluir ${tarefa.titulo}`}
-            className="text-red-300 hover:text-red-200 p-1 transition-colors cursor-pointer"
+            className="text-perigo hover:text-perigo-forte p-1 transition-colors cursor-pointer"
           >
             <Trash2 size={14} />
           </button>
@@ -65,7 +65,7 @@ export default function CartaoTarefa({
       </div>
 
       {tarefa.descricao ? (
-        <p className="text-[#94A3B8] text-xs break-words">{tarefa.descricao}</p>
+        <p className="text-texto-secundario text-xs break-words">{tarefa.descricao}</p>
       ) : null}
     </article>
   );
