@@ -7,27 +7,35 @@ import { BOTAO_PRIMARIO, CAMPOS } from "@/components/ui/estilos";
 import { authClient } from "@/lib/auth-client";
 import BotaoGoogle from "@/components/BotaoGoogle";
 
-function mensagemDeErro(erro: { status?: number; message?: string } | null) {
-  if (erro?.status === 422) {
-    return "Este e-mail já está cadastrado.";
+function mensagemDeErro(erro: { status?: number } | null) {
+  if (erro?.status === 429) {
+    return "Muitas tentativas. Tente novamente mais tarde.";
   }
 
-  return erro?.message || "Não foi possível criar a conta. Tente novamente.";
+  if (erro?.status === 400) {
+    return "Revise os dados informados.";
+  }
+
+  return "Não foi possível criar a conta. Tente novamente.";
 }
 
 export default function FormularioCadastro({
   googleHabilitado = false,
+  verificacaoObrigatoria = false,
 }: {
   googleHabilitado?: boolean;
+  verificacaoObrigatoria?: boolean;
 }) {
   const router = useRouter();
   const [enviando, setEnviando] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
+  const [mensagem, setMensagem] = useState<string | null>(null);
 
   async function enviar(evento: FormEvent<HTMLFormElement>) {
     evento.preventDefault();
     setEnviando(true);
     setErro(null);
+    setMensagem(null);
 
     const dados = new FormData(evento.currentTarget);
     const nome = String(dados.get("nome") ?? "");
@@ -38,11 +46,20 @@ export default function FormularioCadastro({
       name: nome,
       email,
       password: senha,
+      callbackURL: "/login",
       fetchOptions: { body: { rememberMe: false } },
     });
 
     if (error) {
       setErro(mensagemDeErro(error));
+      setEnviando(false);
+      return;
+    }
+
+    if (verificacaoObrigatoria) {
+      setMensagem(
+        "Conta criada. Enviamos um e-mail de verificação; confirme seu endereço para entrar.",
+      );
       setEnviando(false);
       return;
     }
@@ -93,14 +110,21 @@ export default function FormularioCadastro({
           type="password"
           name="senha"
           required
-          minLength={8}
+          minLength={12}
+          maxLength={128}
           autoComplete="new-password"
-          placeholder="Mínimo de 8 caracteres"
+          placeholder="Mínimo de 12 caracteres"
           className={CAMPOS}
         />
+        <span className="text-xs text-texto-secundario">
+          Use ao menos 12 caracteres, com letras e números.
+        </span>
       </label>
 
       {erro ? <p className="text-sm text-perigo">{erro}</p> : null}
+      {mensagem ? (
+        <p className="text-sm text-destaque">{mensagem}</p>
+      ) : null}
 
       <button type="submit" disabled={enviando} className={BOTAO_PRIMARIO}>
         {enviando ? "Criando conta..." : "Criar conta"}

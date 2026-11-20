@@ -11,6 +11,7 @@ import { validarProjeto } from "@/lib/validacao-projetos";
 
 const STATUS_INVALIDO =
   "Status inválido. Use ativo, iniciando, finalizando, concluido ou ideia.";
+const LIMITE_BUSCA = 200;
 
 export const GET = rotaAutenticada(async (request, { usuario }) => {
   const parametros = request.nextUrl.searchParams;
@@ -19,6 +20,10 @@ export const GET = rotaAutenticada(async (request, { usuario }) => {
 
   if (status && !ehStatusProjeto(status)) {
     return respostaErro(STATUS_INVALIDO);
+  }
+
+  if (busca && busca.length > LIMITE_BUSCA) {
+    return respostaErro(`A busca aceita até ${LIMITE_BUSCA} caracteres.`);
   }
 
   const projetos = await listarProjetos(usuario.id, {

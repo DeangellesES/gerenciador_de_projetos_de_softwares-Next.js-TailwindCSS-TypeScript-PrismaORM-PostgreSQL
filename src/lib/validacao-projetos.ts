@@ -14,6 +14,9 @@ import {
 const LIMITE_NOME = 120;
 const LIMITE_DESCRICAO = 600;
 const LIMITE_TEXTO_DETALHE = 600;
+const LIMITE_TEXTO_STACK = 80;
+const LIMITE_ITENS_STACK = 100;
+const LIMITE_ITENS_DETALHE = 100;
 
 function validarStatus(valor: unknown): Validacao<StatusProjeto> {
   if (!ehStatusProjeto(valor)) {
@@ -35,6 +38,20 @@ function validarStack(valor: unknown): Validacao<string[]> {
     return { ok: false, erro: "A stack deve ser uma lista de tecnologias." };
   }
 
+  if (valor.length > LIMITE_ITENS_STACK) {
+    return {
+      ok: false,
+      erro: `Limite de ${LIMITE_ITENS_STACK} tecnologias na stack.`,
+    };
+  }
+
+  if (valor.some((item) => item.trim().length > LIMITE_TEXTO_STACK)) {
+    return {
+      ok: false,
+      erro: `Limite de ${LIMITE_TEXTO_STACK} caracteres por tecnologia.`,
+    };
+  }
+
   return {
     ok: true,
     valor: [...new Set(valor.map((item) => item.trim()).filter(Boolean))],
@@ -48,6 +65,13 @@ function validarDetalhes(valor: unknown): Validacao<string[]> {
 
   if (!Array.isArray(valor) || valor.some((item) => typeof item !== "string")) {
     return { ok: false, erro: "Os detalhes devem ser uma lista de textos." };
+  }
+
+  if (valor.length > LIMITE_ITENS_DETALHE) {
+    return {
+      ok: false,
+      erro: `Limite de ${LIMITE_ITENS_DETALHE} detalhes por projeto.`,
+    };
   }
 
   const detalhes = valor.map((item) => item.trim()).filter(Boolean);

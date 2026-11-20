@@ -60,10 +60,7 @@ export default function BotaoGoogle({
       });
 
       if (error) {
-        setErro(
-          error.message ||
-            "Não foi possível entrar com o Google. Tente novamente.",
-        );
+        setErro("Não foi possível entrar com o Google. Tente novamente.");
         setEnviando(false);
       }
     } catch {

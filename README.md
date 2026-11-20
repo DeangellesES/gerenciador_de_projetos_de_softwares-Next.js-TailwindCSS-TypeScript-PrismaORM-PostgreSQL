@@ -52,9 +52,10 @@ Acesse <http://localhost:3000>.
 | `GOOGLE_CLIENT_ID` | Client ID do OAuth do Google (opcional; habilita o login com Google). |
 | `GOOGLE_CLIENT_SECRET` | Client Secret do OAuth do Google (opcional; habilita o login com Google). |
 | `RESEND_API_KEY` | API key do [Resend](https://resend.com) (opcional; habilita o e-mail de cadastro). |
-| `EMAIL_FROM` | Remetente do e-mail de cadastro, com domínio verificado no Resend. |
+| `EMAIL_FROM` | Remetente do e-mail de cadastro e de verificação, com domínio verificado no Resend. |
+| `EXIGIR_VERIFICACAO_EMAIL` | Exige confirmação do endereço antes do primeiro acesso quando o envio de e-mail está configurado; ativo por padrão em produção, use `false` para desativar. |
 | `SEED_USER_EMAIL` | E-mail do usuário que receberá os projetos de exemplo no seed. |
-| `DEV_API_KEY` | Chave das rotas de desenvolvedor `/api/dev/usuarios` (header `x-dev-key`); se vazia, elas retornam 404. |
+| `DEV_API_KEY` | Chave das rotas de desenvolvedor `/api/dev/usuarios`, apenas fora de produção e somente via header `x-dev-key`; chaves vazias ou com menos de 32 caracteres desabilitam as rotas. |
 
 ### Login com Google
 
@@ -69,6 +70,25 @@ Acesse <http://localhost:3000>.
 
 Se as variáveis não forem preenchidas, o botão do Google fica oculto e o login
 por e-mail/senha continua funcionando normalmente.
+
+## Segurança
+
+- As rotas `/api/dev/usuarios` só existem fora de produção, exigem uma
+  `DEV_API_KEY` de ao menos 32 caracteres e aceitam a chave apenas nos headers
+  `x-dev-key` ou `Authorization: Bearer`. Se a chave tiver sido enviada em uma
+  URL, gere outra antes de voltar a usar as rotas.
+- Cadastros com e-mail/senha exigem senha de 12 a 128 caracteres, com letras e
+  números. Em produção, com envio de e-mail configurado, o primeiro acesso
+  depende da confirmação do endereço; a tela de login permite reenviar o link.
+- Login, cadastro, envio de verificação e redefinição têm limites de tentativas;
+  cada IP/e-mail fica bloqueado por 15 minutos após 5 falhas de senha.
+- As rotas da aplicação limitam requisições por usuário, validam origem em
+  operações que alteram dados e limitam o tamanho do corpo JSON e das listas.
+- A aplicação envia headers de segurança (CSP, HSTS em produção, `nosniff`,
+  `DENY` para frames, `Referrer-Policy` e `Permissions-Policy`) e registra erros
+  sem stack trace nem dados pessoais.
+- Os limitadores em memória funcionam por instância; em deployments com várias
+  instâncias, use um armazenamento compartilhado para limites e sessões.
 
 ## Scripts
 

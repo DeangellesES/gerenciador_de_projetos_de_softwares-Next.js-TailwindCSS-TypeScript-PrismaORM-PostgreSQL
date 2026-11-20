@@ -7,9 +7,20 @@ export type Resultado<T> =
   | { ok: false; erro: string };
 
 const FORMATO_DATA = /^\d{4}-\d{2}-\d{2}$/;
+const ORDEM_MAXIMA = 100_000;
 
 export function ehObjeto(valor: unknown): valor is Record<string, unknown> {
-  return typeof valor === "object" && valor !== null;
+  return typeof valor === "object" && valor !== null && !Array.isArray(valor);
+}
+
+export function senhaEhForte(valor: unknown): valor is string {
+  return (
+    typeof valor === "string" &&
+    valor.length >= 12 &&
+    valor.length <= 128 &&
+    /[A-Za-z]/.test(valor) &&
+    /\d/.test(valor)
+  );
 }
 
 export function validarTexto(
@@ -60,7 +71,7 @@ export function validarInteiroNaoNegativo(valor: unknown): Validacao<number> {
 
   const numero = Number(valor);
 
-  if (!Number.isInteger(numero) || numero < 0) {
+  if (!Number.isInteger(numero) || numero < 0 || numero > ORDEM_MAXIMA) {
     return { ok: false, erro: "A posição da tarefa é inválida." };
   }
 

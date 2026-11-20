@@ -1,8 +1,12 @@
 import { timingSafeEqual } from "node:crypto";
 import { NextResponse, type NextRequest } from "next/server";
 import type { User } from "@/generated/prisma/client";
+import { consultarLimite } from "@/lib/limite-taxa";
+import { ipDeCabecalhos } from "@/lib/seguranca";
 
 const chaveDev = process.env.DEV_API_KEY?.trim();
+const devHabilitado =
+  process.env.NODE_ENV !== "production" && (chaveDev?.length ?? 0) >= 32;
 
 export const CamposUsuario = {
   id: true,
@@ -36,28 +40,42 @@ function chaveDoBearer(valor: string | null) {
 }
 
 export function autorizarDev(request: NextRequest): NextResponse | null {
-  if (!chaveDev) {
+  if (!devHabilitado || !chaveDev) {
     return NextResponse.json(
       { erro: "Rotas de desenvolvedor desabilitadas." },
       { status: 404 },
     );
   }
 
+  const limite = consultarLimite(
+    "dev",
+    ipDeCabecalhos(request.headers),
+    60,
+    60_000,
+  );
+
+  if (!limite.permitido) {
+    return NextResponse.json(
+      { erro: "Muitas requisições. Tente novamente mais tarde." },
+      {
+        status: 429,
+        headers: {
+          "Retry-After": String(Math.ceil(limite.retryAfterMs / 1000)),
+        },
+      },
+    );
+  }
+
   const candidatas = [
     request.headers.get("x-dev-key"),
     chaveDoBearer(request.headers.get("authorization")),
-    request.nextUrl.searchParams.get("x-dev-key"),
-    request.nextUrl.searchParams.get("devKey"),
   ]
     .map((valor) => valor?.trim())
     .filter((valor): valor is string => Boolean(valor));
 
   if (candidatas.length === 0) {
     return NextResponse.json(
-      {
-        erro:
-          "Chave ausente. Envie x-dev-key no header, Authorization: Bearer <chave> ou ?devKey=<chave> na URL.",
-      },
+      { erro: "Chave ausente. Envie x-dev-key no header." },
       { status: 401 },
     );
   }

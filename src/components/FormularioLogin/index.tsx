@@ -7,46 +7,84 @@ import { BOTAO_PRIMARIO, CAMPOS } from "@/components/ui/estilos";
 import { authClient } from "@/lib/auth-client";
 import BotaoGoogle from "@/components/BotaoGoogle";
 
-function mensagemDeErro(erro: { status?: number; message?: string } | null) {
+function mensagemDeErro(erro: { status?: number } | null) {
   if (erro?.status === 401) {
     return "E-mail ou senha inválidos.";
   }
 
-  return erro?.message || "Não foi possível entrar. Tente novamente.";
+  if (erro?.status === 403) {
+    return "Confirme seu e-mail antes de entrar.";
+  }
+
+  if (erro?.status === 429) {
+    return "Muitas tentativas. Tente novamente mais tarde.";
+  }
+
+  return "Não foi possível entrar. Tente novamente.";
 }
 
 export default function FormularioLogin({
   googleHabilitado = false,
+  verificacaoEmailHabilitada = false,
 }: {
   googleHabilitado?: boolean;
+  verificacaoEmailHabilitada?: boolean;
 }) {
   const router = useRouter();
   const [enviando, setEnviando] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
+  const [mensagem, setMensagem] = useState<string | null>(null);
+  const [email, setEmail] = useState("");
+  const [verificacaoPendente, setVerificacaoPendente] = useState(false);
 
   async function enviar(evento: FormEvent<HTMLFormElement>) {
     evento.preventDefault();
     setEnviando(true);
     setErro(null);
+    setMensagem(null);
+    setVerificacaoPendente(false);
 
     const dados = new FormData(evento.currentTarget);
-    const email = String(dados.get("email") ?? "");
+    const emailInformado = String(dados.get("email") ?? "");
     const senha = String(dados.get("senha") ?? "");
 
+    setEmail(emailInformado);
+
     const { error } = await authClient.signIn.email({
-      email,
+      email: emailInformado,
       password: senha,
       rememberMe: false,
     });
 
     if (error) {
       setErro(mensagemDeErro(error));
+      setVerificacaoPendente(
+        verificacaoEmailHabilitada && error.status === 403,
+      );
       setEnviando(false);
       return;
     }
 
     router.push("/");
     router.refresh();
+  }
+
+  async function reenviarVerificacao() {
+    setEnviando(true);
+    setErro(null);
+    setMensagem(null);
+
+    const { error } = await authClient.sendVerificationEmail({
+      email,
+      callbackURL: "/login",
+    });
+
+    setMensagem(
+      error
+        ? "Não foi possível reenviar o e-mail. Tente novamente."
+        : "E-mail de verificação enviado.",
+    );
+    setEnviando(false);
   }
 
   return (
@@ -86,6 +124,20 @@ export default function FormularioLogin({
       </label>
 
       {erro ? <p className="text-sm text-perigo">{erro}</p> : null}
+      {mensagem ? (
+        <p className="text-sm text-destaque">{mensagem}</p>
+      ) : null}
+
+      {verificacaoPendente ? (
+        <button
+          type="button"
+          onClick={reenviarVerificacao}
+          disabled={enviando}
+          className="text-sm text-destaque hover:underline"
+        >
+          Reenviar e-mail de verificação
+        </button>
+      ) : null}
 
       <button type="submit" disabled={enviando} className={BOTAO_PRIMARIO}>
         {enviando ? "Entrando..." : "Entrar"}
